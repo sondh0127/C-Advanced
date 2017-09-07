@@ -1,0 +1,28 @@
+#include <stdio.h>
+#include "sort.h"
+#include <stdlib.h>
+
+int compare(const void* a, const void* b) {
+
+	return (*(int*)a - *(int*)b);
+
+/*
+  int a = *((int*)p);
+  int b = *((int*)q);
+  if( a == b) return 0;
+  return a > b  ? 1:-1;
+*/
+}
+
+struct Student {
+	int age;
+	int marks;
+	char name[20];
+};
+int comparator(const void* p, const void *q) {
+	int a = ((struct Student *)p)->marks;
+	int b = ((struct Student *)q)->marks;
+	return (a- b);
+	
+}
+

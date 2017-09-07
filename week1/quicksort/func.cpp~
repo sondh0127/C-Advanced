@@ -1,0 +1,7 @@
+#include <iostream>
+#include "func.h"
+
+using namespace std;
+void func(const char* mes){
+	cout << mes << endl;
+}
