@@ -37,9 +37,9 @@ int binarySearch(PhoneEntry* entries, int l, int r, char* name, int* found)
 			*found = 0;
 			return binarySearch(entries, l, mid -1, name, found);
 		}
-			
+
 		return binarySearch(entries, mid + 1, r, name, found);
-			
+
 	}
 	return -1;
 }

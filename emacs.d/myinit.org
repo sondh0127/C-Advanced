@@ -1,5 +1,3 @@
-To Highlight keyword need to install 'org' package
-M-x package-install org RET 
 * Speed up` emacs
 #+BEGIN_SRC emacs-lisp
 ;;;; SPEED UP EMACS ====================================
@@ -12,7 +10,9 @@ M-x package-install org RET
 ;;;; ==================================================
 
 (setq scroll-conservatively 101) 
-
+(setq mouse-wheel-progressive-speed nil
+      mouse-wheel-scroll-amount '(1 ((shift) . 5))
+      scroll-conservatively 101)
 #+END_SRC
 
 * Toggle comment using C-M-/
@@ -41,8 +41,10 @@ M-x package-install org RET
 (setq inhibit-startup-message t)
 (tool-bar-mode -1)
 (cua-mode t)
-(speedbar 1)
-
+;;(speedbar 1)
+(global-visual-line-mode 1)
+;; save/restore opened files
+(desktop-save-mode 1)
 (display-time-mode 1)
 
 (tooltip-mode 0)
@@ -55,9 +57,6 @@ M-x package-install org RET
 (fset 'yes-or-no-p 'y-or-n-p)
 (setq user-full-name "Do Hong Son"
 			user-mail-address "sonstephendo@gmail.com")
-;;font
-(custom-set-faces
- '(default ((t (:family "Source Code Pro" :foundry "ADBO" :slant normal :weight normal :height 120 :width normal)))))
 #+END_SRC
 * ggtags
 sudo apt-get install global
@@ -84,12 +83,12 @@ Brings up some help
 * Autocomplete
 #+BEGIN_SRC emacs-lisp
 (use-package auto-complete
-	:ensure t
-	:init
-	(progn
-		(ac-config-default)
-		(global-auto-complete-mode t)
-	))
+:ensure t
+:init
+(progn
+(ac-config-default)
+(global-auto-complete-mode t)
+))
 #+END_SRC
 
 * Flycheck
@@ -99,7 +98,7 @@ Brings up some help
 	:init
 	(global-flycheck-mode t))
     (setq flycheck-check-syntax-automatically '(mode-enabled save)
-           flycheck-idle-change-delay 0.8
+           flycheck-idle-change-delay 1.2
            flycheck-handle-idle-change nil)
 
 #+END_SRC
@@ -128,12 +127,15 @@ Brings up some help
 * 'try' package
 #+BEGIN_SRC emacs-lisp
 (use-package try
-	:ensure t)
+:ensure t)
 #+END_SRC
 
 * Org mode
+
 #+BEGIN_SRC emacs-lisp
-;;ORG mode
+(use-package org
+  :ensure org-plus-contrib
+)
 (use-package org-bullets
   :ensure t
   :config
@@ -376,3 +378,9 @@ Swiper gives us a really efficient incremental search with regular expressions
 )
 (add-hook 'c-mode-common-hook 'my:add-semantic-to-autocomplete)
 #+END_SRC
+* Test
+#+BEGIN_SRC emacs-lisp
+
+
+#+END_SRC
+  
