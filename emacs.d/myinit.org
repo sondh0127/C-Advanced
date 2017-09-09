@@ -55,6 +55,9 @@ M-x package-install org RET
 (fset 'yes-or-no-p 'y-or-n-p)
 (setq user-full-name "Do Hong Son"
 			user-mail-address "sonstephendo@gmail.com")
+;;font
+(custom-set-faces
+ '(default ((t (:family "Source Code Pro" :foundry "ADBO" :slant normal :weight normal :height 120 :width normal)))))
 #+END_SRC
 * ggtags
 sudo apt-get install global
@@ -143,16 +146,6 @@ Brings up some help
 (use-package color-theme
 :ensure t)
 
-    ;;(use-package zenburn-theme
-    ;;  :ensure t
-    ;;  :config (load-theme 'zenburn t))
-
-    ;;(use-package spacemacs-theme
-    ;;  :ensure t
-    ;;  :init
-    ;;  (load-theme 'spacemacs-dark t)
-    ;;  )
-
 (use-package base16-theme
 	:ensure t)
 
@@ -165,7 +158,6 @@ Brings up some help
 (use-package alect-themes
 	:ensure t)
 
- 
 (moe-light)
 (use-package powerline
 	:ensure t
@@ -379,4 +371,8 @@ Swiper gives us a really efficient incremental search with regular expressions
 * Semantic
 #+BEGIN_SRC emacs-lisp
 (semantic-mode 1)
+(defun my:add-semantic-to-autocomplete() 
+  (add-to-list 'ac-sources 'ac-source-semantic)
+)
+(add-hook 'c-mode-common-hook 'my:add-semantic-to-autocomplete)
 #+END_SRC
