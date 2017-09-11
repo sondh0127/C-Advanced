@@ -1,7 +1,7 @@
 #declare the variable
 CC=gcc
 # -c = compilation -Wall = giving warning
-CFLAGS=-c -Wall
+CFLAGS=-c -Wall -g
 
 all: main
 

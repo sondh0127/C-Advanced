@@ -56,7 +56,6 @@ int* createArray(int size) {
 
 // A utility function to print an array
 void printarr(int a[], int size) {
-	qsort
 	for (int i = 0; i < size; i++)
 		printf("%d  ", a[i]);
 	printf("\n");
@@ -64,7 +63,6 @@ void printarr(int a[], int size) {
 
 int main()
 {
-	printf("%s\n", );
     int *a1 = createArray(SMALL_NUMBER);
 	printarr(a1, SMALL_NUMBER);
 	int item = a1[0];

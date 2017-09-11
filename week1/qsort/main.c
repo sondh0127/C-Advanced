@@ -3,6 +3,8 @@
 #include <time.h>
 #include <string.h>
 #include "sort.h"
+#include "string_ext.h"
+#include "extio.h"
 
 int main()
 {
@@ -26,10 +28,11 @@ int main()
 		//printf("%s|\t%s\n",arr[i].name, arr[i].phone);
 		i++;
 	}
+	
 	qsort(arr, size, sizeof(Phone), comparator);
 
 	for(int i = 0; i < size; i++) {
-		printf("%s|\t%s\n",arr[i].name, arr[i].phone);
+		printf("%25s|\t%20s\n",arr[i].name, arr[i].phone);
 	}
 
 	fclose(fp);
