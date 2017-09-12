@@ -9,6 +9,8 @@ int main()
 {	SymbolTable phoneBook = createSymbolTable(makePhone, comparePhone);
 	long number = 983984775;
 	char name[] = "Tuan Anh";
+
+	
 	addEntry(name, &number, &phoneBook);
 	
 	number = 909775090;
@@ -32,9 +34,9 @@ int main()
 	addEntry(name, &number, &phoneBook);
 
 	
-	
+	/* printf("%d %d %s\n", phoneBook.size,phoneBook.total, (char*)phoneBook.entries->key); */
 	for (int i = 0; i < phoneBook.total; i++) {
-		printf("%d|%s\t%d\n", i+1, (char*)phoneBook.entries[i].key, *((int*)phoneBook.entries[i].value));
+		printf("%d|%s\t%d\n", i+1, (char*)(phoneBook.entries[i].key), *((int*)(phoneBook.entries[i].value)));
 	}
     return 0;
 }

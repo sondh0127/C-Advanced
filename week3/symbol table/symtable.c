@@ -5,8 +5,8 @@
 #include <time.h>
 #include "symtable.h"
 
-#define INITIAL_SIZE 0
-#define INCREMENTAL_SIZE 10
+#define INITIAL_SIZE 1
+#define INCREMENTAL_SIZE 1
 
 
 SymbolTable createSymbolTable(Entry(*makeNode)(void*, void*), int(*compare)(void*, void*))
@@ -14,7 +14,7 @@ SymbolTable createSymbolTable(Entry(*makeNode)(void*, void*), int(*compare)(void
 	SymbolTable s;
 	s.size = INITIAL_SIZE;
 	s.total = 0;
-	s.entries = (Entry*)malloc(s.size*sizeof(Entry));
+	s.entries = (Entry*)malloc(INITIAL_SIZE*sizeof(Entry));
 	s.makeNode = makeNode;
 	s.compare = compare;
 	return s;
@@ -52,6 +52,7 @@ int binarySearch(Entry* entries, int l, int r,int(*compare)(void*, void*), void 
 }
 void addEntry(void *key, void *value, SymbolTable* book)
 {
+	
 	Entry *entries = book->entries;
 	
 	int found = 0;
@@ -59,31 +60,25 @@ void addEntry(void *key, void *value, SymbolTable* book)
 	//printf("%d\n", found);
 	if(found == 1)
 	{
-		
-		//entries[i].key = strdup((char*)key);
-		//entries[des].value = strdup((char*)value);
+		entries[des] = book->makeNode(key, value);
 		return;
-		/* memcpy(entries[i].key, key,strlen((char*)key)+1); */
-		memcpy(entries[des].value, value, strlen((char*)value)+1);
 	}
-	/* if(book->total >= book->size) {  */
-	/* 	entries = (Entry*)realloc(entries, sizeof(Entry)*(INITIAL_SIZE + INCREMENTAL_SIZE)); */
-	/* 	book->size += INCREMENTAL_SIZE; */
-	/* } */
-	/* else if(book->total > INITIAL_SIZE + INCREMENTAL_SIZE) { */
-	/* 	printf("added failed, No more space!\n"); */
-	/* 	return; */
-	/* } */
+	if (book->total >= book->size) {
+		Entry * new_entries = (Entry*)malloc(sizeof(Entry)*(book->size+ INCREMENTAL_SIZE));
+		for(int i = 0; i < book->total; i++) {
+			new_entries[i] = entries[i];
+		}
+		book->entries = new_entries;
+		free(entries);
+		entries = book->entries;
+		book->size +=INCREMENTAL_SIZE;
+	}
 	int i;
 	for(i = book->total - 1; (i >= 0 && book->compare(entries[i].key, key) > 0); i--) {
-		entries[i+1].key = strdup(entries[i].key);
-		entries[i+1].value = strdup(entries[i].value);
+		entries[i+1] = entries[i];
 	}
-	entries[i+1].key = strdup((char*)key);
-	entries[i+1].value = strdup((char*)value);
+	entries[i+1] = book->makeNode(key,value);
 	book->total++;
-
-	
 }
 
 
