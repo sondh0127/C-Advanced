@@ -19,8 +19,8 @@ PhoneBook createPhoneBook()
 void dropPhoneBook(PhoneBook* book)
 {// remove all Phone Book
 	free(book->entries);
-	p.total = 0;
-	p.size = 0;
+	book->total = 0;
+	book->size = 0;
 }
 
 int binarySearch(PhoneEntry* entries, int l, int r, char* name, int* found)

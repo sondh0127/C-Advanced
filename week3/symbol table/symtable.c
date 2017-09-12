@@ -4,19 +4,19 @@
 #include <ctype.h>
 #include <time.h>
 #include "symtable.h"
-#define INITIAL_SIZE 100
+
+#define INITIAL_SIZE 0
 #define INCREMENTAL_SIZE 10
 
 
 SymbolTable createSymbolTable(Entry(*makeNode)(void*, void*), int(*compare)(void*, void*))
 {
 	SymbolTable s;
-	s.entries = (Entry*)malloc(INITIAL_SIZE*sizeof(Entry));
-	s.total = 0;
 	s.size = INITIAL_SIZE;
+	s.total = 0;
+	s.entries = (Entry*)malloc(s.size*sizeof(Entry));
 	s.makeNode = makeNode;
 	s.compare = compare;
-	s.makeNode = makeNode; 
 	return s;
 }
 void dropSymbolTable(SymbolTable *tab)
@@ -31,9 +31,10 @@ int binarySearch(Entry* entries, int l, int r,int(*compare)(void*, void*), void 
 	if (r >= l)
 	{
 		int mid = l + (r - l)/2;
+		
 		int res = compare(entries[mid].key, key);
 		if (res == -1) return -1; 
-		if(res == 0 ) {
+		if(res == 0) {
 			*found = 1;
 			return mid;
 		} 
@@ -43,46 +44,53 @@ int binarySearch(Entry* entries, int l, int r,int(*compare)(void*, void*), void 
 			*found = 0;
 			return binarySearch(entries, l, mid -1, compare, key, found);
 		}
-
+		*found = 0;
 		return binarySearch(entries, mid + 1, r, compare, key, found);
 
 	}
-	return -1;
+		return -1;
 }
 void addEntry(void *key, void *value, SymbolTable* book)
 {
 	Entry *entries = book->entries;
+	
 	int found = 0;
-	int i = binarySearch(entries, 0, book->size -1 , book->compare, key, &found);
+	int des = binarySearch(entries, 0, book->total - 1, book->compare, key, &found);
+	//printf("%d\n", found);
 	if(found == 1)
 	{
 		
-		entries[i].key = strdup((char*)key);
-		entries[i].value = strdup((char*)value);
+		//entries[i].key = strdup((char*)key);
+		//entries[des].value = strdup((char*)value);
+		return;
 		/* memcpy(entries[i].key, key,strlen((char*)key)+1); */
-		/* memcpy(entries[i].value, value, strlen((char*)value)+1); */
+		memcpy(entries[des].value, value, strlen((char*)value)+1);
 	}
-	else //memcpy
-	{
-		book->total++;
-		if(book->total >= book->size) {
-			entries = (Entry*)realloc(entries, sizeof(Entry)*(INITIAL_SIZE + INCREMENTAL_SIZE));
-			book->size += INCREMENTAL_SIZE;
-		}
-		else if(book->total > INITIAL_SIZE + INCREMENTAL_SIZE) {
-			printf("added failed, No more space!\n");
-			return;
-		}
-		entries[book->total - 1].key = strdup((char*)key);
-		entries[book->total - 1].value = strdup((char*)value);
-		/* memcpy(entries[book->total - 1].key, key,strlen((char*)key)+1); */
-		/* memcpy(entries[book->total - 1].value, value,strlen((char*)value)+1); */
+	/* if(book->total >= book->size) {  */
+	/* 	entries = (Entry*)realloc(entries, sizeof(Entry)*(INITIAL_SIZE + INCREMENTAL_SIZE)); */
+	/* 	book->size += INCREMENTAL_SIZE; */
+	/* } */
+	/* else if(book->total > INITIAL_SIZE + INCREMENTAL_SIZE) { */
+	/* 	printf("added failed, No more space!\n"); */
+	/* 	return; */
+	/* } */
+	int i;
+	for(i = book->total - 1; (i >= 0 && book->compare(entries[i].key, key) > 0); i--) {
+		entries[i+1].key = strdup(entries[i].key);
+		entries[i+1].value = strdup(entries[i].value);
 	}
+	entries[i+1].key = strdup((char*)key);
+	entries[i+1].value = strdup((char*)value);
+	book->total++;
+
+	
 }
+
+
 Entry* getEntry(void *key, SymbolTable book)
 {
 	int found = 0;
-	int pos = binarySearch(book.entries, 0, book.size -1 , book.compare, key, &found);
+	int pos = binarySearch(book.entries, 0, book.total -1 , book.compare, key, &found);
 	if(found == 1) {
 		return &book.entries[pos];
 	}
@@ -111,5 +119,16 @@ int comparePhone(void* key1, void* key2) {
 		return strcmp((char*)key1, (char*)key2);
 	else
 		return -1;
-	
+}
+
+/* buffer exch implemetion */
+void exch(void *buf, int size, int i, int j)
+{
+	char *a = (char*)buf + i*size;
+	char *b = (char*)buf + j*size;
+	for (int k = 0; k < size; k++) {
+		char tmp = a[k];
+		a[k] = b[k];
+		b[k] = tmp;
+	}	
 }

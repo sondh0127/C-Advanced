@@ -15,8 +15,9 @@ int main()
 	addPhoneNumber("Tuan Dung", 929292, &book);
 	addPhoneNumber("Anh Thang", 919191, &book);
 	addPhoneNumber("Ngo Phong", 949494, &book);
+	addPhoneNumber("Ngo Phong", 9466464, &book);
 //Hien thi danh sach book
-	for (int i = 0; i < book.total + 1; i++) {
+	for (int i = 0; i < book.total; i++) {
 		printf("%d|%s\t|%ld\n", i+1, book.entries[i].name,  book.entries[i].number);
 	}
 //Tim kiem
