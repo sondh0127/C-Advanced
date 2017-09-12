@@ -8,9 +8,9 @@
 
 int main()
 {
-	PhoneBook book;
+	PhoneBook book = createPhoneBook();
 //Khoi tao & chen
-	book = createPhoneBook();
+
 	addPhoneNumber("Do Lam", 909090, &book);
 	addPhoneNumber("Tuan Dung", 929292, &book);
 	addPhoneNumber("Anh Thang", 919191, &book);

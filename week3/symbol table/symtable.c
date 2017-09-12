@@ -64,14 +64,16 @@ void addEntry(void *key, void *value, SymbolTable* book)
 		return;
 	}
 	if (book->total >= book->size) {
-		Entry * new_entries = (Entry*)malloc(sizeof(Entry)*(book->size+ INCREMENTAL_SIZE));
-		for(int i = 0; i < book->total; i++) {
-			new_entries[i] = entries[i];
-		}
-		book->entries = new_entries;
-		free(entries);
-		entries = book->entries;
+		/* Entry * new_entries = (Entry*)malloc(sizeof(Entry)*(book->size+ INCREMENTAL_SIZE)); */
+		/* for(int i = 0; i < book->total; i++) { */
+		/* 	new_entries[i] = entries[i]; */
+		/* } */
+		/* book->entries = new_entries; */
+		/* free(entries); */
+		/* entries = book->entries; */
+		entries = (Entry*)realloc(entries, sizeof(Entry)*(book->size + INCREMENTAL_SIZE));
 		book->size +=INCREMENTAL_SIZE;
+		book->entries = entries;
 	}
 	int i;
 	for(i = book->total - 1; (i >= 0 && book->compare(entries[i].key, key) > 0); i--) {
