@@ -14,7 +14,6 @@ typedef struct {
 	int size;
 }PhoneBook;
 
-
 PhoneBook createPhoneBook();
 void dropPhoneBook(PhoneBook* book);
 

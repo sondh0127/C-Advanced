@@ -13,6 +13,7 @@ int main()
 	book = createPhoneBook();
 	addPhoneNumber("Do Lam", 909090, &book);
 	addPhoneNumber("Tuan Dung", 929292, &book);
+	addPhoneNumber("Do Lam", 999999, &book);
 	addPhoneNumber("Anh Thang", 919191, &book);
 	addPhoneNumber("Ngo Phong", 949494, &book);
 //Hien thi danh sach book
@@ -20,6 +21,7 @@ int main()
 		printf("%d|%s\t|%ld\n", i+1, book.entries[i].name,  book.entries[i].number);
 	}
 //Tim kiem
+	
 	PhoneEntry* entry = getPhoneNumber("Do Lam", book);
 	if(entry == NULL)
 		printf("Can not found!\n");

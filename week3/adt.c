@@ -27,12 +27,12 @@ int binarySearch(PhoneEntry* entries, int l, int r, char* name, int* found)
 	if (r >= l)
 	{
 		int mid = l + (r - l)/2;
-		if(strcmp(entries->name, name) == 0 ) {
+		if(strcmp(entries[mid].name, name) == 0 ) {
 			*found = 1;
 			return mid;
 		} 
 
-		if(strcmp(entries->name, name) > 0)
+		if(strcmp(entries[mid].name, name) > 0)
 		{
 			*found = 0;
 			return binarySearch(entries, l, mid -1, name, found);
