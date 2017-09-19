@@ -52,6 +52,7 @@ int main() {
 			ptr = jrb_find_str(b, p.name);
 			if(ptr != NULL) {
 				jrb_delete_node(ptr);
+				printf("Delete successfully\n");
 			} else {
 				printf("Can't find the key!\n");
 			}    	

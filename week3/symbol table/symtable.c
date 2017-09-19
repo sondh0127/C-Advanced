@@ -82,8 +82,6 @@ void addEntry(void *key, void *value, SymbolTable* book)
 	entries[i+1] = book->makeNode(key,value);
 	book->total++;
 }
-
-
 Entry* getEntry(void *key, SymbolTable book)
 {
 	int found = 0;
@@ -93,39 +91,4 @@ Entry* getEntry(void *key, SymbolTable book)
 	}
 	else
 		return NULL;
-}
-// Phone data type
-// makePhone
-Entry makePhone(void* name, void* phone) {
-	Entry res;
-	/* char *strdup(const char *src) { */
-    /* size_t len = strlen(src) + 1; */
-    /* char *s = malloc(len); */
-    /* if (s == NULL) */
-    /*     return NULL; */
-    /* return (char *)memcpy(s, src, len); */
-/* } */
-	res.key = strdup((char*)name);
-	res.value = malloc(sizeof(long));
-	memcpy(res.value, phone, sizeof(long));
-	return res;
-}
-//compare
-int comparePhone(void* key1, void* key2) {
-	if(key1 != NULL)
-		return strcmp((char*)key1, (char*)key2);
-	else
-		return -1;
-}
-
-/* buffer exch implemetion */
-void exch(void *buf, int size, int i, int j)
-{
-	char *a = (char*)buf + i*size;
-	char *b = (char*)buf + j*size;
-	for (int k = 0; k < size; k++) {
-		char tmp = a[k];
-		a[k] = b[k];
-		b[k] = tmp;
-	}	
 }
