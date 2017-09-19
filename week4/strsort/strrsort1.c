@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
-#include "jrb.h"
-#include "fields.h"
+#include "../include/libfdr/jrb.h"
+#include "../include/libfdr/fields.h"
 
 int main()
 {
@@ -16,7 +16,7 @@ int main()
     (void) jrb_insert_str(b, strdup(is->text1), new_jval_v(NULL));
   }
 
-  jrb_traverse(bn, b) {
+  jrb_rtraverse(bn, b) {
     printf("%s", jval_s(bn->key));
   }
 }
