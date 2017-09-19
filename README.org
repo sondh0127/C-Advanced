@@ -1,4 +1,45 @@
 # C-Advanced update
-You can check my configuration of emacs edit here
-* Change 1
-* Change 2
+Git-tutorial
+* Initializing
+  git init
+* Checking the status
+  git status
+* Adding changes
+  git add test.txt
+* Do something then check status again
+  ..
+  git status
+* Committing
+  git commit -m "Add the message"
+* Adding all change
+  git add '*.txt'
+* Committing again
+  git commit -m "Add all the message"
+* History checking
+  git log
+* Remote respositories
+  git remote add origin https://github.com/try-git/try_git.git
+* Pushing Remotely
+  git push -u origin master
+  -u for remember the parameters
+  git push -u origin master
+* Differences
+  git diff HEAD
+  git add octofamily/octodog.txt
+  git diff --staged
+  git reset octofamily/octodog.txt
+  git checkout -- octocat.txt
+* Braching out
+  git branch clean_up
+  git checkout clean_up
+* Removing all the things
+  git rm '*.txt'
+  git commit -m "Remove all the cats"
+* Switching
+  git checkout master
+* Merge
+  git merge clean_up
+* delete brach
+  git branch -d clean_up
+* final
+  git push
