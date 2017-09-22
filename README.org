@@ -1,39 +1,35 @@
-# C-Advanced update
-* Git-tutorial
+# Git Node
+* Git-Node
 ** Initializing
+   echo "# Initialize readme.org" >> README.org
    git init
+   git add README.md
 
 ** Checking the status
    git status
-
+   /// ignore something
+   git status -uno
+   // git status --untracked-files=no
 ** Adding changes
    git add test.txt
-
-** Do something then check status again
-   ..
-   
-  git status
+   git add .
+   git add '*.txt'
 
 ** Committing
    git commit -m "Add the message"
-
-** Adding all change
-  git add '*.txt'
-
-** Committing again
-  git commit -m "Add all the message"
 
 ** History checking
    git log
 
 ** Remote respositories
    git remote add origin https://github.com/try-git/try_git.git
-** Pushing Remotely
+** Pushing
+   git push
+   
+   //pushing remote
    git push -u origin master
 
    -u for remember the parameters
-
-   git push -u origin master
 
 ** Differences
    git diff HEAD
@@ -51,11 +47,14 @@
 
    git checkout clean_up
 
-** Removing all the things
+** Removing the things
+   git rm file1.txt
    git rm '*.txt'
+   But if you want to remove the file only from the Git repository and not remove it from the filesystem, use:
 
-   git commit -m "Remove all the cats"
-
+   git rm --cached file1.txt
+   and add changes 
+   git push origin branch_name
 ** Switching
    git checkout master
 
@@ -64,7 +63,5 @@
 
 ** delete brach
    git branch -d clean_up
-
-** final
-   git push
+   
 
