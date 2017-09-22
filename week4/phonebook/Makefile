@@ -1,7 +1,7 @@
 EXECUTABLES = phonebook
 SRCS= phonebook.c
 
-IDIR =../include/libfdr
+IDIR =../include
 CFLAGS= -g -Wall -I$(IDIR)
 CC=gcc
 

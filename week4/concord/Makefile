@@ -1,7 +1,7 @@
 EXECUTABLES = concord1 concord2 concord3
 SRCS= concord1.c concord2.c concord3.c
 
-IDIR =../include/libfdr
+IDIR =../include
 CFLAGS= -g -Wall -I$(IDIR)
 CC=gcc
 

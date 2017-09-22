@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
-#include "../include/libfdr/jrb.h"
-#include "../include/libfdr/fields.h"
+#include "../include/jrb.h"
+#include "../include/fields.h"
 
 int main()
 {

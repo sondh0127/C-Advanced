@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <string.h>
 #include "ctype.h"
-#include "../include/libfdr/jrb.h"
-#include "../include/libfdr/fields.h"
+#include "../include/jrb.h"
+#include "../include/fields.h"
 
 int ucomp(Jval k1, Jval k2)
 {

@@ -1,7 +1,7 @@
 EXECUTABLES = strsort strisort strusort strrsort1 strrsort2 nsort nsort2 nsort3
 SRCS= strsort.c strisort.c strusort.c strrsort1.c strrsort2.c nsort.c nsort2.c nsort3.c
 
-IDIR =../include/libfdr
+IDIR =../include
 CFLAGS= -g -Wall -I$(IDIR)
 CC=gcc
 
