@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
-#include "../include/jrb.h"
-#include "../include/fields.h"
+#include "../../lib/include/jrb.h"
+#include "../../lib/include/fields.h"
 
 int main()
 {
