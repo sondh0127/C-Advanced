@@ -1,49 +1,56 @@
-EXECUTABLES = strsort strisort strusort strrsort1 strrsort2 nsort nsort2 nsort3
-SRCS= strsort.c strisort.c strusort.c strrsort1.c strrsort2.c nsort.c nsort2.c nsort3.c
+# project name (generate executable with this name)
+TARGET = strsort
 
-IDIR =../include
-CFLAGS= -g -Wall -I$(IDIR)
-CC=gcc
+CC = gcc
+# compiling flags here
+CFLAGS= -g -Wall
+
+IDIR = ../../lib/include
+# define any directories containing header file other then /usr/include
+INCLUDES = -I$(IDIR)
+
+# define any libraries to link into executable:
+# if I want to link in libraries
+# (libx.so or libx.a) I use the -llibname (-lx -lx) = (-lx)
+# libfdr => -lfdr
+LIBS = -lfdr 
+# LIBS = -lm
+
+# define any directories containing implementation of the file in INCLUDES
+# ../..lib means up 2 level then search for /lib
+LDIR = ../../lib/libs
+LFLAGS = -L$(LDIR)
+
+# This uses Suffix Replacement within a macro:
+#   $(name:string1=string2)
+# For each word in 'name' replace 'string1' with 'string2'
+# Below we are replacing the suffix .c of all words in the macro SRCS
+# with the .o suffix
+
+SRCS := $(wildcard *.c)
 
 ODIR=obj
-LDIR =../lib
-LIBS = libfdr.a
+_OBJS= $(SRCS:.c=.o)
+OBJS = $(patsubst %,$(ODIR)/%,$(_OBJS))
 
-DEPS = fields.h jrb.h jval.h dllist.h
-DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
-
-_OBJ= $(SRCS:.c=.o)
-OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
+.PHONY: depend clean
 #action
-all: $(EXECUTABLES)
+all: $(TARGET)
 
-$(ODIR)/%.o: %.c $(DEPS)
-	$(CC) -c -o $@ $< $(CFLAGS)
-#change here
-strsort: $(ODIR)/strsort.o
-	$(CC) -o $@ $^ $(CFLAGS) $(LDIR)/$(LIBS)
+# This uses Suffix Replacement within a macro:
+#   $@ = left-part of ":" ( == $(TARGET))
+# 
+$(TARGET): $(OBJS)
+	$(CC) $(CFLAGS) $(INCLUDES) -o $@ $^ $(LFLAGS) $(LIBS)
+	@echo "Linking complete!"
 
-strisort: $(ODIR)/strisort.o
-	$(CC) -o $@ $^ $(CFLAGS) $(LDIR)/$(LIBS)
-
-strusort: $(ODIR)/strusort.o
-	$(CC) -o $@ $^ $(CFLAGS) $(LDIR)/$(LIBS)
-
-strrsort1: $(ODIR)/strrsort1.o
-	$(CC) -o $@ $^ $(CFLAGS) $(LDIR)/$(LIBS)
-
-strrsort2: $(ODIR)/strrsort2.o
-	$(CC) -o $@ $^ $(CFLAGS) $(LDIR)/$(LIBS)
-
-nsort: $(ODIR)/nsort.o
-	$(CC) -o $@ $^ $(CFLAGS) $(LDIR)/$(LIBS)
-
-nsort2: $(ODIR)/nsort2.o
-	$(CC) -o $@ $^ $(CFLAGS) $(LDIR)/$(LIBS)
-
-nsort3: $(ODIR)/nsort3.o
-	$(CC) -o $@ $^ $(CFLAGS) $(LDIR)/$(LIBS)
-.PHONY: clean
+$(OBJS): $(ODIR)/%.o: %.c
+	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+	@echo "Compiled "$<" successfully!"
 
 clean:
-	rm -f $(ODIR)/*.o core $(EXECUTABLES)
+	rm -f $(ODIR)/*.o *~ $(TARGET)
+	@echo "Cleanup complete!"
+
+#depend: $(SRCS)
+#        makedepend $(INCLUDES) $^

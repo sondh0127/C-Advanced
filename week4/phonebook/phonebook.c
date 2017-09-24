@@ -2,15 +2,15 @@
 #include <stdlib.h>
 #include <string.h>
 #include "extio.h"
-#include "../include/jrb.h"
+#include "../../lib/libfdr/jrb.h"
 #include "phonebook.h"
 #define MENUOPT 6
 
 int main() {
 	char menu[MENUOPT][40] = {"Create a phone book", "Insert a new entry", "Print phone book", "Delete an entry", "Modify a number", "Save and exit"};
 	char *filename = "phonebook.txt";
-	JRB b;
-	JRB ptr;
+	JRB b = make_jrb();
+	JRB ptr = NULL;
 
 	Phone p;
 	int choose = 0;
@@ -26,7 +26,7 @@ int main() {
 		}
 		switch (choose) {
 		case 1:
-			b = make_jrb();
+			
 			getData(filename, b, ptr);
 			printf("Input successful!\n");
 			break;
@@ -114,9 +114,12 @@ void saveData(char *filename, JRB b, JRB ptr) {
 		printf("Can't open file, %s\n", filename);
 		exit(1);
 	}
+	if(b == NULL)
+		return;
 	jrb_traverse(ptr, b) {
 		fprintf(fp, "%s\t%s\n", jval_s(ptr->key), jval_s(ptr->val));
 	}
+
 	fclose(fp);
 }
 
