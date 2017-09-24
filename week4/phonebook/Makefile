@@ -5,7 +5,7 @@ CC=gcc
 # compiling flags here
 CFLAGS= -g -Wall
 
-IDIR = ../../lib/include
+IDIR = ../../lib/libfdr
 # define any directories containing header file other then /usr/include
 INCLUDES = -I$(IDIR)
 
@@ -18,7 +18,7 @@ LIBS = -lfdr
 
 # define any directories containing implementation of the file in INCLUDES
 # ../..lib means up 2 level then search for /lib
-LDIR = ../../lib/libs
+LDIR = ../../lib/libfdr
 LFLAGS = -L$(LDIR)
 
 # This uses Suffix Replacement within a macro:

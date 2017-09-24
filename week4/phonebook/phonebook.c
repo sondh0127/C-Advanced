@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "extio.h"
-#include "../../lib/include/jrb.h"
+#include "../../lib/libfdr/jrb.h"
 #include "phonebook.h"
 #define MENUOPT 6
 

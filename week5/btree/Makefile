@@ -1,11 +1,11 @@
 # project name (generate executable with this name)
-TARGET = phonebook
+TARGET = btree
 
 CC=gcc
 # compiling flags here
 CFLAGS= -g -Wall
 
-IDIR = ../../lib/include
+IDIR = ../../lib/btree
 # define any directories containing header file other then /usr/include
 INCLUDES = -I$(IDIR)
 
@@ -13,12 +13,12 @@ INCLUDES = -I$(IDIR)
 # if I want to link in libraries
 # (libx.so or libx.a) I use the -llibname (-lx -lx) = (-lx)
 # libfdr => -lfdr
-LIBS = -lfdr 
+LIBS = -lbt
 # LIBS = -lm
 
 # define any directories containing implementation of the file in INCLUDES
 # ../..lib means up 2 level then search for /lib
-LDIR = ../../lib/libs
+LDIR = ../../lib/btree
 LFLAGS = -L$(LDIR)
 
 # This uses Suffix Replacement within a macro:
@@ -32,11 +32,7 @@ ODIR = obj
 _OBJS = $(SRCS:.c=.o)
 OBJS = $(patsubst %,$(ODIR)/%,$(_OBJS))
 
-#_DEPS = fields.h jrb.h jval.h dllist.h
-#DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
-
-
-.PHONY: depend clean
+.PHONY: clean
 #action
 all: 	$(TARGET) 
 
