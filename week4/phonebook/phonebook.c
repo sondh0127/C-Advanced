@@ -105,6 +105,7 @@ void getData(char *filename, JRB b, JRB ptr) {
 			printf("Dulicape key!\n");
 		}
 	}
+	free(p);
 	fclose(fp);
 }
 

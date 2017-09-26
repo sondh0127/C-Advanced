@@ -9,8 +9,6 @@ typedef struct Phone {
 	long phone;
 }Phone;
 
-int menu();
-
 void print_bterror(void)
 {
     int errorcode, ioerr;
@@ -70,6 +68,48 @@ int btdel(BTA* btact, char* key);
 	}
 	printf("n = %ld", j);
 }
+
+int insert_address(BTA *rootBT) {
+	int status ;
+	char name[80];
+	char phone[30]; // ZKYLEN
+	printf("Type new phone: (Type \"quit\" for exit))\n");
+	strcpy(name, "");
+	while(1) {
+		printf("Name(key): "); readLn(stdin, name, 80);
+		if(strcmp(name, "quit") == 0) break;
+		printf("Phone(value): "); readLn(stdin, phone, 30);
+		if(strcmp(phone, "quit") == 0) break;
+		status = btins(rootBT, name,(char*)(&phone), sizeof(long));
+				
+		if(status != 0) {
+			printf("btree: btins: [error] Dulicape key \n");
+		}
+		printf("Return value: %d\n", status);
+	}
+	return status;
+}
+
+
+int menu() {
+	int choose = 0;
+	int MAX = 5;
+	char menu[][40] = {"Insert a new address", "Find a entry", "Print all phone book" , "Delete an entry", "Save and exit"};
+
+	printf("\n\t*=*=*=| PHONE ADDRESS |=*=*=*\n");
+	printf("  \t=========== MENU =========== \n");
+	for(int i = 0; i < MAX; i++)
+        printf("\t%d. %s\n", i+1, menu[i]);
+	printf("Enter your chose: ");
+	while(scanf("%d", &choose) != 1) {
+		printf("Input must be integer!\n");
+		while (getchar() != '\n' );
+		//wasting the buffer till the next new line
+		printf("Enter your choose: ");
+	}
+	return choose;	
+}
+
 int main(int argc, char *argv[argc])
 {
 	if(argc != 2) {
@@ -101,19 +141,7 @@ int main(int argc, char *argv[argc])
 		
 		switch (choose) {
 		case 1:
-			printf("Type new phone: (Type \"quit\" for exit))\n");
-			strcpy(name, "");
-			while(1) {
-				printf("Name(key): "); readLn(stdin, name, 70);
-				if(strcmp(name, "quit") == 0) break;
-				printf("Phone(value): "); scanf("%ld", &phone);
-				status = btins(rootBT, name,(char*)(&phone), size_l);
-				
-				if(status != 0) {
-					printf("btree: btins: [error] Dulicape key \n");
-				}
-				printf("Return value: %d\n", status);
-			}	
+			//
 			break;
 		case 2:
 			printf("Find address: \n");
@@ -173,23 +201,4 @@ int main(int argc, char *argv[argc])
 		}
 	} while (choose != 5);
     return 0;
-}
-
-int menu() {
-	int choose = 0;
-	int MAX = 5;
-	char menu[][40] = {"Insert a new address", "Find a entry", "Print all phone book" , "Delete an entry", "Save and exit"};
-
-	printf("\n\t*=*=*=| PHONE ADDRESS |=*=*=*\n");
-	printf("  \t=========== MENU =========== \n");
-	for(int i = 0; i < MAX; i++)
-        printf("\t%d. %s\n", i+1, menu[i]);
-	printf("Enter your chose: ");
-	while(scanf("%d", &choose) != 1) {
-		printf("Input must be integer!\n");
-		while (getchar() != '\n' );
-		//wasting the buffer till the next new line
-		printf("Enter your choose: ");
-	}
-	return choose;	
 }
