@@ -1,10 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "../../lib/btree/btree.h"
-#include "extio.h"
 #include <string.h>
-#include "soundex.h"
-#define MAX_LEn 100000
+#include "../../lib/btree/btree.h"
+#include "extio.h" 				/* import readLn (func for reading input) */
+
+#include "dict.h"
+#define MAX_LEN 100000
 
 int menu() {
 	int choose = 0;
@@ -26,44 +27,46 @@ int menu() {
 }
 void display_bt(BTA* rootBT);
 
-
-
 int main()
 {
-	char *filename = "test.dat";
-	char *filename_Soundex = "test_soundex.dat";
+	char *filetxt = "anhviet109K.txt";
+	char *fileDict = "dict.dat";
+	char *fileSoundex = "soundex.dat";
 	BTA *rootDic;
 	BTA *soundexT;
+	int status, val;
 	btinit();
 	/* open file if file doesn't exist => create new file*/
-	if((rootDic = btopn(filename, 0, FALSE))!= NULL) {
+	rootDic = btopn(fileDict, 0, FALSE);
+	if(rootDic != NULL) {
 		printf("Open file successful!\n");
 	} else {
 		printf("Creating data\n");
-		readFile(&rootDic, filename);
+		rootDic = btcrt(fileDict, 0, FALSE);
+		/* import, creating data from .txt; */
+		createDict(filetxt, &rootDic);
 	}
-	if((soundexT = btopn(filename_Soundex, 0, FALSE))!= NULL) {
+	
+	if((soundexT = btopn(fileSoundex, 0, FALSE))!= NULL) {
 		printf("Open file successful!\n");
 	} else {
 		printf("Creating data\n");
-		///copy rootDic to soundexT for sug
-		creatSoundexTree(rootDic, &soundexT);
+		/* copy rootDic to soundexT for sug */
+		createSoundexTree(rootDic, &soundexT);
 	}
 	int choose = 0;
-	char word[MAX_LEn];
-	char mean[MAX_LEn];
-	char mean_out[MAX_LEn];
-	int status, val;
+	char word[MAX_LEN];
+	char mean[MAX_LEN];
+	char mean_out[MAX_LEN];
 	int i,k;
 	char suggest[15][100];
 	do {
 		choose = menu();
 		
 		switch (choose) {
-		case 5:
-			// test
-			;
-			printf("nhap tu can goi y:\n"); readLn(stdin, word, MAX_LEn);
+		case 6:
+			/* test case : suggestion word */
+			printf("nhap tu can goi y:\n"); readLn(stdin, word, MAX_LEN);
 			
 			k = suggestion(soundexT,word,suggest);
 			if(k!=0)
@@ -71,16 +74,16 @@ int main()
 			break;
 		case 1:
 			printf(" Input data:\n");
-			printf("word:");  readLn(stdin, word, MAX_LEn);
-			printf("meaning:");  readLn(stdin, mean, MAX_LEn);
+			printf("word:");  readLn(stdin, word, MAX_LEN);
+			printf("meaning:");  readLn(stdin, mean, MAX_LEN);
 			printf("%15s\t %15s\n",  word, mean);
 			status = btins(rootDic, word, mean, sizeof(char)*strlen(mean));
-            btsel(rootDic, word, mean_out, sizeof(char)*MAX_LEn, &val);
+            btsel(rootDic, word, mean_out, sizeof(char)*MAX_LEN, &val);
 			printf("%15s\t %15s\n",  word, mean_out);
 			break;
 		case 2:
 			printf(" Input data:\n");
-			printf("word:");  readLn(stdin, word, MAX_LEn);
+			printf("word:");  readLn(stdin, word, MAX_LEN);
 			status = bfndky(rootDic, word, &val);
 			if (status != 0)
 				printf("Duplicate \n");
@@ -91,13 +94,13 @@ int main()
 			break;
 		case 4:
 			printf(" Input data:\n");
-			printf("word:");  readLn(stdin, word, MAX_LEn);
+			printf("word:");  readLn(stdin, word, MAX_LEN);
 			status = btdel(rootDic, word);
 			
 			//just for test 
 			if(status == 0)
 			{
-				btsel(rootDic, word, mean_out, sizeof(char)*MAX_LEn, &val);
+				btsel(rootDic, word, mean_out, sizeof(char)*MAX_LEN, &val);
 				printf("%15s\t %15s\n",  word, mean_out);
 			}
 			else {
@@ -107,18 +110,19 @@ int main()
 			
 		}
 
-}  while (choose != 5);
-return 0;
+	}  while (choose !=5);
+	return 0;
 }
 
 void display_bt(BTA* rootDic){
+	/* must fix for dictionary output */
 	int val; //rsize
 	long j = 0;
-	char word[MAX_LEn];
-	char mean[MAX_LEn];
+	char word[MAX_LEN];
+	char mean[MAX_LEN];
 	btpos(rootDic, ZSTART); //ZSTART = 1;
 	
-	while(btseln(rootDic, word, mean, sizeof(char)*MAX_LEn, &val) == 0) {
+	while(btseln(rootDic, word, mean, sizeof(char)*MAX_LEN, &val) == 0) {
 		printf("%15s\t %15s\n",  word, mean);
 		j++;	
 	}
