@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <string.h>
 #include "stdlib.h"
-#include "../../lib/include/jrb.h"
-#include "../../lib/include/fields.h"
+#include "../../lib/libfdr/jrb.h"
+#include "../../lib/libfdr/fields.h"
 
 int main()
 {
@@ -16,8 +16,16 @@ int main()
   while (get_line(is) >= 0) {
     (void) jrb_insert_int(b, atoi(is->text1), new_jval_s(strdup(is->text1)));
   }
-
-  jrb_traverse(bn, b) {
-    printf("%s", jval_s(bn->val));
+  int found = 0;
+  JRB node = jrb_find_gte_int(b, 5, &found);
+  if(found)
+    printf("%s", jval_s(node->val));
+  else {
+    printf("Not Found!\nThe smallest one greater\n%s", jval_s(node->val));
   }
+
+  // jrb_traverse(bn, b) {
+  //   printf("%d\n", jval_i(bn->key));
+  //   //printf("%s", jval_s(bn->val));
+  // }
 }

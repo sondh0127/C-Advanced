@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
-#include "../../lib/include/jrb.h"
-#include "../../lib/include/fields.h"
+#include "../../lib/libfdr/jrb.h"
+#include "../../lib/libfdr/fields.h"
 
 int revcomp(Jval k1, Jval k2)
 {
@@ -18,8 +18,7 @@ int main()
   b = make_jrb();
 
   while (get_line(is) >= 0) {
-    (void) jrb_insert_gen(b, new_jval_s(strdup(is->text1)), 
-                               new_jval_v(NULL), revcomp);
+    (void) jrb_insert_gen(b, new_jval_s(strdup(is->text1)), new_jval_v(NULL), revcomp);
   }
 
   jrb_traverse(bn, b) {
