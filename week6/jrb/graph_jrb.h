@@ -1,6 +1,6 @@
 #ifndef GRAPH_JRB_H
 #define GRAPH_JRB_H
-#include "../../lib/libfdr/jrb.h"
+#include "../../lib/include/jrb.h"
 typedef JRB Graph_JRB;
 
 Graph_JRB createGraph_JRB();

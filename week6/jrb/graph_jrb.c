@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "graph_jrb.h"
-#include "../../lib/libfdr/jrb.h"
 
 Graph_JRB createGraph_JRB()
 {
