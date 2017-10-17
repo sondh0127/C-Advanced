@@ -1,3 +1,4 @@
+MKDIR_P = mkdir -p
 # project name (generate executable with this name)
 TARGET = main
 
@@ -32,7 +33,7 @@ OBJS = $(patsubst %,$(ODIR)/%,$(_OBJS))
 
 .PHONY: clean
 #action
-all: $(TARGET) 
+all: $(TARGET)
 
 # This uses Suffix Replacement within a macro:
 #   $@ = left-part of ":" ( == $(TARGET))
@@ -42,9 +43,10 @@ $(TARGET): $(OBJS)
 	@echo "Linking complete!"
 
 $(ODIR)/%.o: %.c $(DEPS)
+	@mkdir -p obj
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 	@echo "Compiled "$<" successfully!"
-
+	
 clean:
 	rm -f core $(ODIR)/*.o *~ $(TARGET)
 	@echo "Cleanup complete!"

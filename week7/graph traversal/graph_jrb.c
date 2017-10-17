@@ -132,7 +132,7 @@ void BFS(Graph g,int start,int stop,void(*func)(int))
 		int key = jval_i(node->val);
 		// Dequeue this element
 		dll_delete_node(node);
-
+		
 		tmp = jrb_find_int(visited, key);
 		if(jval_i(tmp->val) == 0) {
 			// Pass the vertex to external function
@@ -140,6 +140,13 @@ void BFS(Graph g,int start,int stop,void(*func)(int))
 			// Mark this element as 'visited'
 			jrb_delete_node(tmp);
 			jrb_insert_int(visited, key, new_jval_i(1));		
+		}
+
+		// If this is the required vertex, return
+		if (key == stop) {
+			free_dllist(queue);
+			jrb_free_tree(visited);
+			return;
 		}
 		
 		int count = getAdjacentVertices(g, key, output);
@@ -150,11 +157,6 @@ void BFS(Graph g,int start,int stop,void(*func)(int))
 				dll_append(queue,new_jval_i(output[i])); 
 		}
 
-		
-		// If this is the required vertex, return
-		if(key == stop) {
-			break;
-		}
 	}
 	free_dllist(queue);
 	jrb_free_tree(visited);
@@ -210,6 +212,13 @@ void DFS(Graph g, int start, int stop, void (*func)(int))
 			dll_delete_node(dll_tmp);
 		}
 
+		// If this is the required vertex, return
+		if (key == stop) {
+			free_dllist(stack);
+			jrb_free_tree(visited);
+			return;
+		}
+
 		int count = getAdjacentVertices(g, key, output);
 		for (int i = count -1 ; i >= 0; i--)
 		{
@@ -221,13 +230,6 @@ void DFS(Graph g, int start, int stop, void (*func)(int))
 			}
 		}
 		
-
-        // If this is the required vertex, return
-		if (key == stop) {
-			break;
-		}
-
-
         // JRB u_node = jrb_find_int(g, key);
 		// if(u_node == NULL) continue;
 
