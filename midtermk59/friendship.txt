@@ -1,9 +1,0 @@
-8
-"Mai" "Lan"
-"Cuc" "Truc"
-"Mai" "Cuc"
-"Hung" "Minh"
-"Minh" "Lan"
-"Hoang" "Cuc"
-"Hoang" "Minh"
-"Tuan" "Truc"
