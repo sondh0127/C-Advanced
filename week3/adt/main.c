@@ -10,7 +10,6 @@ int main()
 {
 	PhoneBook book = createPhoneBook();
 //Khoi tao & chen
-
 	addPhoneNumber("Do Lam", 909090, &book);
 	addPhoneNumber("Tuan Dung", 929292, &book);
 	addPhoneNumber("Do Lam", 999999, &book);
