@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "extio.h"
-#include "../../lib/btree/btree.h"
+#include "../../lib/include/btree.h"
 
 typedef struct Phone {
 	char name[70];
@@ -117,9 +117,9 @@ int main(int argc, char *argv[argc])
 		exit(1);
 	}
 	char *filename = argv[1];
-	BTA *rootBT;
-
 	btinit();
+	BTA *rootBT;
+	
 	/* open file if file doesn't exist => create new file*/
 	if((rootBT = btopn(filename, 0, FALSE))!= NULL) {
 		printf("Open file successful!\n");
@@ -130,7 +130,6 @@ int main(int argc, char *argv[argc])
 
 	char name[80];
 	char phone_s[32]; // ZKYLEN
-	long phone;
 	
 	int choose = 0;
 	int val;//*rsize

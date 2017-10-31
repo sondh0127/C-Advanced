@@ -1,4 +1,4 @@
-#include "../../lib/libfdr/jrb.h"
+#include "../../lib/include/jrb.h"
 #ifndef _PHONEBOOK_H
 #define _PHONEBOOK_H
 typedef struct Phone {

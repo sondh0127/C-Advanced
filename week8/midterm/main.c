@@ -1,0 +1,202 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+#include "extio.h"
+#include "main.h"
+#include "../../lib/include/jrb.h"
+
+#define MAX_LEN 255
+
+
+/* MAIN */
+int main(int argc, char *argv[])
+{
+	if(argc != 2) {
+		printf("Usage: main filename\n");
+		exit(1);
+	}
+	char *filename = strdup(argv[1]);
+	
+	/* open file if file doesn't exist => create new file*/
+	JRB dns = make_jrb();
+	int choose = 0;
+	do {
+		choose = menu();
+		switch (choose) {
+		case 1:
+			readFile(filename, dns);
+			display_test(dns);
+			break;
+		case 2:
+			insertDNS(dns);
+			saveData(filename, dns);
+			break;
+		case 3:
+			findIP(dns);
+			break;
+		case 4:
+			findDomain(dns);
+			break;
+		case 6:
+			display_test(dns);
+			break;
+		case 5:
+			jrb_free_tree(dns);
+			printf("Good Bye!\n");
+			break;
+		default:
+			printf("Invalid input! Type (1-5)\n");
+			break;	
+		}
+	}  while (choose !=5);
+	return 0;
+}
+
+/* FUNCTION DEF */
+int menu() {
+	int choose = 0;
+	int MAX = 5;
+	char menu[][40] = { "Read file and show IP list", 
+						"Add new IP", 
+						"Find IP", 
+						"Find domain" , 
+						"Exit"};
+
+	printf("\n\t================================\n");
+	printf(  "\t============| MENU |============\n");
+	printf(  "\t================================\n");
+	for(int i = 0; i < MAX; i++)
+		printf("\t%d. %s\n", i+1, menu[i]);
+	printf("Enter your chose: ");
+	while(scanf("%d", &choose) != 1) {
+		printf("Input must be integer!\n");
+		while (getchar() != '\n' );
+		//wasting the buffer till the next new line
+		printf("Enter your choose: ");
+	}
+	return choose;	
+}
+
+void readFile(char *filename, JRB dns)
+{
+	int number;
+	DNS p;
+	JRB ptr;
+	FILE *fp = fopen(filename,"r");
+	if (fp== NULL){
+		fprintf(stderr, "Error: Cant opening file");
+		exit(1);
+	}
+	if(fscanf(fp, "%d\n", &number) == 1) {
+		printf("%d\n", number);
+	} else {
+		printf("Wrong format input from file %s!\n", filename);
+		fclose(fp);
+		exit(1);
+	}
+	for (int i = 0; i < number; ++i)
+	{
+		fscanf(fp, "%[^\n]\n%[^\n]\n", p.domain, p.ip);
+		if(strcmp(p.domain, "") != 0) {
+			ptr = jrb_find_str(dns, p.domain);
+			if(ptr == NULL) {
+				ptr = jrb_insert_str(dns, strdup(p.domain), new_jval_s(strdup(p.ip)));
+			} else {
+				printf("Dulicape domain %s!\n", p.domain);
+			}
+		}
+	}
+	fclose(fp);
+	printf("\n=>Input successful!\n");
+}
+
+void display_test(JRB dns)
+{
+	JRB ptr;
+	printf("\n====DNS ADDRESS====\n");
+	jrb_traverse(ptr, dns) {
+		printf("%s\t%s\n", jval_s(ptr->key), jval_s(ptr->val));
+	}
+	printf("====================\n");
+}
+
+void insertDNS(JRB dns)
+{
+	JRB ptr;
+	DNS p;
+	printf("Insert new dns (Type new domain and ip)\n");
+	printf("Domain: "); readLn(stdin, p.domain, 100);
+	ptr = jrb_find_str(dns, p.domain);
+	if (ptr == NULL) {
+		printf("IP: "); readLn(stdin, p.ip, 100);
+		if(check_ip(dns, p.ip) == NULL)
+			ptr = jrb_insert_str(dns, strdup(p.domain), new_jval_s(strdup(p.ip)));
+		else
+			printf("IP already exists!\n");
+	} else {
+		printf("Domain already exists!\n");
+	}
+	printf("\n=>Insert successful!\n");
+}
+
+void findIP(JRB dns)
+{
+	JRB ptr;
+	DNS p;
+	printf("Find ip (Type domain of ip)\n");
+	printf("Domain: "); readLn(stdin, p.domain, 100);
+	ptr = jrb_find_str(dns, p.domain);
+	if (ptr != NULL) {
+		printf("%s\t%s\n", jval_s(ptr->key), jval_s(ptr->val));
+	} else {
+		printf("Cant found domain %s!\n", p.domain);
+	}
+}
+
+void findDomain(JRB dns)
+{
+	JRB ptr;
+	DNS p;
+	printf("Find domain (Type ip of this domain)\n");
+	printf("IP: "); readLn(stdin, p.ip, 100);
+	ptr = check_ip(dns, p.ip);
+	if (ptr != NULL) {
+		printf("%s\t%s\n", jval_s(ptr->key), jval_s(ptr->val));
+	} else {
+		printf("Cant found IP %s!\n", p.ip);
+	}
+}
+
+void saveData(char *filename, JRB dns)
+{
+	JRB ptr;
+	
+	FILE *fp = fopen(filename, "w");
+	if (fp == NULL) {
+		printf("Can't open file, %s\n", filename);
+		exit(1);
+	}
+	if(dns == NULL)
+		return;
+	int count = 0;
+	jrb_traverse(ptr, dns) {
+		count++;
+	}
+	fprintf(fp, "%d\n",count);
+	jrb_traverse(ptr, dns) {
+		fprintf(fp, "%s\n%s\n", jval_s(ptr->key), jval_s(ptr->val));
+	}
+
+	fclose(fp);
+}
+
+JRB check_ip(JRB dns, char *ip)
+{
+	JRB ptr;
+	jrb_traverse(ptr, dns) {
+		if(strcmp(ip,jval_s(ptr->val)) == 0)
+			return ptr;
+	}
+	return NULL;
+}
