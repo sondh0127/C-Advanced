@@ -14,8 +14,8 @@ INCLUDES = -I../../lib/include
 # define any libraries to link into executable:
 # if I want to link in libraries
 # (libx.so or libx.a) I use the -llibname (-lx -lx) = (-lx)
-# libfdr => -lfdr
-LFLAGS = -lfdr -lbt -lm
+# libfdr => -lfdr -lm
+LFLAGS = -lfdr -lbt 
 # define any directories containing implementation of the file in INCLUDES
 # ../..lib means up 2 level then search for /lib
 LIBS = -L../../lib/implementation
@@ -38,15 +38,15 @@ all: $(TARGET)
 # This uses Suffix Replacement within a macro:
 #   $@ = left-part of ":" ( == $(TARGET))
 # 
-$(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) $(INCLUDES) -o $@ $^ $(LIBS) $(LFLAGS)
-	@echo "Linking complete!"
 
 $(ODIR)/%.o: %.c $(DEPS)
 	@mkdir -p obj
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 	@echo "Compiled "$<" successfully!"
-	
+
+$(TARGET): $(OBJS)
+	$(CC) $(CFLAGS) $(INCLUDES) -o $@ $^ $(LIBS) $(LFLAGS)
+	@echo "Linking complete!"	
 clean:
 	rm -f core $(ODIR)/*.o *~ $(TARGET)
 	@echo "Cleanup complete!"
