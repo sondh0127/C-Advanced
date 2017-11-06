@@ -144,7 +144,7 @@ void showAdjacent(map input, char name[])
 	int v1 = -1;
 	int output[10];
 	int numberofAdjacent;
-	v1 = checkName(name, input)
+	v1 = checkName(name, input);
 	// for(i = 0; i < input.number; ++i)
 	// 	if (strcmp(input.list[i].name, name) == 0)
 	// 	{

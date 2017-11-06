@@ -16,11 +16,13 @@ int isAdjacent(Graph_D graph, int v1, int v2);
 void addEdge(Graph_D graph, int v1, int v2);
 
 int outDegree(Graph_D graph, int v, int *output);
-int getAdjacentVertices(Graph_D graph, int v, int* output);
+int inDegree(Graph_D graph, int v, int* output);
 
 void BFS(Graph_D graph,int start,int stop,void(*func)(int));
 void DFS(Graph_D graph, int start, int stop, void (*func)(int));
-int isDAG(Graph_D graph);
+
+int isCycleVertex(Graph_D graph, int start);
+int isCycle(Graph_D graph);
 
 void showVertices(Graph_D graph);
 void printGraph(Graph_D graph);
