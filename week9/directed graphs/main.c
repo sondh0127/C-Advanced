@@ -12,6 +12,7 @@ void show_int(int num)
 
 int main(int argc, char const *argv[])
 {
+
 	Graph_D G = createGraph();
 
 	addVertex(G, 0, "V0");
@@ -27,10 +28,26 @@ int main(int argc, char const *argv[])
 	addEdge(G, 3, 4);
 	printf("================\n");
 	printGraph(G);
-	if(isCycle(G) == 1) 
-		printf("Have a cycles in the graph\n");
-	else
-		printf("\nGraph is DAG graph!\n");
+	// int count = inDegree(G, 1, output);
+	// printf("\nInDegree\n");
+	// for (int i = 0; i < count; ++i)	{
+	// 	printf("%d ",output[i]);
+	// }
+	// int output2[10];
+	// int count2 = outDegree(G, 1, output2);
+	// printf("\nOutDegree\n");
+	// for (int i = 0; i < count2; ++i){
+	// 	printf("%d ",output2[i]);
+	// }
+	
+	// printf("\n");
+	topologicalSort(G, show_int);
+	printf("\n");
+
+	// if(isCycle(G) == 1) 
+	// printf("\nHave a cycles in the graph\n");
+	// else
+	// printf("\nGraph is DAG graph!\n");
 
 
 	return 0;

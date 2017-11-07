@@ -258,6 +258,7 @@ int isCycleVertex(Graph_D graph, int start)
 	Dllist stack = new_dllist();
 	dll_append(stack, new_jval_i(start));
     // Traversing
+    // printf("\n");
 	while(dll_empty(stack) != 1) {
         // Take the top element in the stack
 		Dllist dll_tmp = dll_last(stack);
@@ -266,7 +267,7 @@ int isCycleVertex(Graph_D graph, int start)
 		JRB tmp = jrb_find_int(visited, key);
 		if(jval_i(tmp->val) == 0) {
         	// Pass the vertex to external function
-			printf("%4d ", key);
+			//printf("%4d ", key);
 	        // Mark this element as 'visited'
 			jrb_delete_node(tmp);
 			jrb_insert_int(visited, key, new_jval_i(1));
@@ -290,7 +291,7 @@ int isCycleVertex(Graph_D graph, int start)
 			}
 		}
 	}
-	printf("\n");
+	
 	free_dllist(stack);
 	jrb_free_tree(visited);
 	return 0;
@@ -299,9 +300,10 @@ int isCycleVertex(Graph_D graph, int start)
 int isCycle(Graph_D graph)
 {	
 	JRB ptr;
-	jrb_traverse(ptr,graph->edges)
-	if(isCycleVertex(graph,jval_i(ptr->key)))
-		return 1;
+	jrb_traverse(ptr,graph->edges) {
+		if(isCycleVertex(graph,jval_i(ptr->key)) == 1)
+			return 1;
+	}
 	return 0;
 }
 
@@ -315,7 +317,7 @@ void showVertices(Graph_D graph)
 
 void printGraph(Graph_D graph)
 {
-	JRB ptr;
+	JRB ptr;	
 	jrb_traverse(ptr, graph->edges) {
 		printf("%s: ", getVertex(graph, jval_i(ptr->key)));
 		JRB tree = (JRB) jval_v(ptr->val);
@@ -327,28 +329,94 @@ void printGraph(Graph_D graph)
 	}
 }
 
-// void TSort(Graph_D graph, void (*visit)(int)) {
+void topologicalSort(Graph_D graph, void (*visit)(int))
+{
+	if (isCycle(graph) == 1) {
+		printf("Graph is not DAG graph\n");
+		return;
+	}
+	JRB visited = make_jrb();
+ 	JRB ptr;
+ 	int V = 0;
+	jrb_traverse(ptr, graph->vertices) {
+		V++;
+	}
+ 	int indegree_node[V];
+ 	int indegree_arr[V];
 
-//  	JRB visited = make_jrb();
-//  	JRB ptr;
+ 	Dllist queue = new_dllist();
+ 	jrb_traverse(ptr, graph->vertices) {
+ 		int key = jval_i(ptr->key);
+ 		indegree_arr[key] = inDegree(graph, key, indegree_node);
+ 		if(indegree_arr[key] == 0)
+ 			dll_append(queue, new_jval_i(key));
+ 	}
+	// Traversing
+ 	while(dll_empty(queue) != 1) {
+		// Take first element in the queue
+ 		Dllist node = dll_first(queue);
+ 		int key = jval_i(node->val);
+			// Dequeue this element
+ 		dll_delete_node(node);
 
-//  	int V = 0;
-// 	jrb_traverse(ptr, graph->vertices) {
-// 		V++;
-// 		jrb_insert_int(visited, jval_i(ptr->key), new_jval_i(0));
-// 	}
+		visit(key);
+ 		int outdegree_node[V];
 
-//  	int outdegree_node[V];
-//  	int indegree_node[V];
-//  	int indegree_ar[V];
+ 		int count = outDegree(graph, key, outdegree_node);
+ 		for (int i = 0; i < count; ++i)	{
+ 			int tail = outdegree_node[i];
+ 			indegree_arr[tail]--;
+ 			if (indegree_arr[tail] == 0) {
+ 				dll_append(queue, new_jval_i(tail));
+ 			}
+ 		}	
+ 	}
+ 	free_dllist(queue);
+ 	jrb_free_tree(visited);
+ }
 
- 	
-// 	Dllist queue = new_dllist();
-//  	jrb_traverse(ptr, graph->vertices) {
-//  		int key = jval_i(ptr->key);
-//  		indegree_ar[key] = outDegree(graph, key, indegree_node);
-//  		if(indegree_ar[key] == 0)
-//  			dll_append(queue, new_jval_i(key));
-//  	}
- 
-//  }
+ void topologicalSort_T(Graph_D g, int * output, int * n) {
+    JRB node;
+    int indegreeList[100];
+    int adjacents[100];
+    int count = 0;
+    int i, total;
+    int key;
+    int tail;
+    Dllist queue = new_dllist();
+    Dllist temp;
+
+    jrb_traverse(node, g->vertices) {
+        indegreeList[count] = inDegree(g, jval_i(node->key), adjacents);
+        if (indegreeList[count] == 0) {
+            dll_append(queue, node->key);
+        }
+        count++;
+    }
+    
+    *n = count;
+    count = 0;
+    // indegreeList
+    // 0, 1, 1, 1, 2, 0
+    // -1, 0, 0, 1, 1, 0
+    
+    while(dll_empty(queue) != 1) {
+        temp = dll_first(queue);
+        key = jval_i(temp->val);
+        dll_delete_node(temp);
+
+        output[count] = key;
+        indegreeList[key] = -1;
+
+        total = outDegree(g, key, adjacents);
+        for (i = 0; i < total; i++) {
+            tail = adjacents[i];
+            indegreeList[tail]--;
+            if (indegreeList[tail] == 0) {
+                dll_append(queue, new_jval_i(tail));
+            }
+        }
+        
+        count++;
+    }
+}

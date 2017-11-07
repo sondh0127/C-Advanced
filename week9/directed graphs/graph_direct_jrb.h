@@ -26,4 +26,7 @@ int isCycle(Graph_D graph);
 
 void showVertices(Graph_D graph);
 void printGraph(Graph_D graph);
+void topologicalSort(Graph_D graph, void (*visit)(int));
+
+void topologicalSort_T(Graph_D g, int * output, int * n);
 #endif /* GRAPH_JRB_H */
