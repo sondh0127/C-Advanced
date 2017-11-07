@@ -41,13 +41,16 @@ int main(int argc, char const *argv[])
 	// }
 	
 	// printf("\n");
-	topologicalSort(G, show_int);
-	printf("\n");
+	
 
-	// if(isCycle(G) == 1) 
-	// printf("\nHave a cycles in the graph\n");
-	// else
-	// printf("\nGraph is DAG graph!\n");
+	if(isCycle(G) == 1) 
+	printf("\nHave a cycles in the graph\n");
+	else {
+		printf("\nGraph is DAG graph!\n");
+		topologicalSort(G, show_int);
+		printf("\n");
+	}
+	
 
 
 	return 0;

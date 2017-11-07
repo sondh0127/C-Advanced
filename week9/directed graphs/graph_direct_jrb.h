@@ -1,11 +1,10 @@
-#ifndef GRAPH_JRB_H
+	#ifndef GRAPH_JRB_H
 #define GRAPH_JRB_H
 #include "../../lib/include/jrb.h"
 typedef struct {
 	JRB edges;
 	JRB vertices; 
-} graph_d;
-typedef graph_d* Graph_D;
+} Graph_D;
 
 Graph_D createGraph();
 void dropGraph(Graph_D graph);
