@@ -1,18 +1,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "graph_direct_jrb.h"
+#include "graph_weighted_jrb.h"
 #include "../../lib/include/dllist.h"
 
-Graph_D createGraph()
+Graph_W createGraph()
 {
-	Graph_D newGraph;
+	Graph_W newGraph;
 	newGraph.edges = make_jrb();
 	newGraph.vertices = make_jrb();
 	return newGraph;
 }
 
-void dropGraph(Graph_D graph)
+void dropGraph(Graph_W graph)
 {
 	JRB ptr;
 	jrb_traverse(ptr, graph.edges) {
@@ -22,7 +22,7 @@ void dropGraph(Graph_D graph)
 	jrb_free_tree(graph.edges);
 }
 
-void addVertex(Graph_D graph, int id, char *name)
+void addVertex(Graph_W graph, int id, char *name)
 {
 	JRB tmp = jrb_find_int(graph.vertices, id);
 	if (tmp == NULL) {
@@ -32,7 +32,7 @@ void addVertex(Graph_D graph, int id, char *name)
 	}
 }
 
-char *getVertex(Graph_D graph, int id)
+char *getVertex(Graph_W graph, int id)
 {
 	JRB tmp = jrb_find_int(graph.vertices, id);
 	if(tmp != NULL)
@@ -40,7 +40,7 @@ char *getVertex(Graph_D graph, int id)
 	return NULL;
 }
 
-int isAdjacent(Graph_D graph, int v1, int v2)
+int isAdjacent(Graph_W graph, int v1, int v2)
 {
 	if (graph.edges == NULL) return 0;
 
@@ -53,8 +53,8 @@ int isAdjacent(Graph_D graph, int v1, int v2)
 	}
 	return 0;
 }
-
-void addEdge(Graph_D graph, int v1, int v2)
+// ==============Add modifier============
+void addEdge(Graph_W graph, int v1, int v2, double weight)
 {
 	if (isAdjacent(graph, v1, v2)) return;
 	JRB tmp = jrb_find_int(graph.edges, v1);
@@ -62,20 +62,128 @@ void addEdge(Graph_D graph, int v1, int v2)
 	if (tmp == NULL) {
 		tree = make_jrb();
 		jrb_insert_int(graph.edges, v1, new_jval_v(tree));
-		jrb_insert_int(tree, v2, new_jval_i(1));
+		jrb_insert_int(tree, v2, new_jval_i(weight));
 	} else {
 		tree = (JRB)jval_v(tmp->val);
-		jrb_insert_int(tree, v2, new_jval_i(1));
+		jrb_insert_int(tree, v2, new_jval_i(weight));
 	}
 }
+// == Valid check for test
+	// JRB tmp = jrb_find_int(graph.vertices, v1);
+	// if (tmp == NULL) return  INFINITIVE_VALUE;
+	// JRB tmp = jrb_find_int(graph.vertices, v2);
+	// if (tmp == NULL) return  INFINITIVE_VALUE;
+	// if (isAdjacent(graph, v1, v2) == 0) return INFINITIVE_VALUE;
+double getEdgeValue(Graph_W graph, int v1, int v2)
+{
+	JRB tmp = jrb_find_int(graph.edges, v1);
+	if (tmp != NULL) {
+		JRB tree = (JRB) jval_v(tmp->val);
+		JRB ptr = jrb_find_int(tree, v2);
+		if(ptr != NULL) {
+			return jval_d(ptr->val);
+		}
+	}
 
-int outDegree(Graph_D graph, int v, int *output)
+	return INFINITIVE_VALUE;
+}
+
+int getHighestID(Graph_W graph)
+{	
+	int max = -1000;
+	JRB ptr;
+	jrb_traverse(ptr, graph.vertices) {
+		int key = jval_i(ptr->key);
+		if(key >= max)
+			max = key;
+	}
+	return max;
+}
+
+
+double shortestPath (	Graph_W graph,
+					int start,
+					int stop,
+					int *output_path,
+					int *length)
+{
+	JRB check1 = jrb_find_int(graph.vertices,start);
+	JRB check2 = jrb_find_int(graph.vertices,stop);
+	if (check1 == NULL ) {
+		printf("Graph does not have vertex %d\n", start);
+		return INFINITIVE_VALUE;
+	}
+	if (check2 == NULL) {
+		printf("Graph does not have vertex %d\n", stop);
+		return INFINITIVE_VALUE;
+	}
+
+
+	JRB visited = make_jrb();
+	JRB distance = make_jrb();
+	JRB pred = make_jrb();
+
+	JRB ptr;
+	int V = 0;
+	jrb_traverse(ptr,graph.vertices) {
+		int key = jval_i(ptr->key);
+		double dist = INFINITIVE_VALUE;
+		if(key == start)
+			dist = 0;
+		jrb_insert_int(distance, key, new_jval_i(dist));
+		jrb_insert_int(visited, key, new_jval_i(0));
+		V++;
+	}
+	int adjacents[V];
+	
+	// Create a queue and enqueue the first element
+	Dllist queue = new_dllist();
+	dll_append(queue,new_jval_i(start));
+	// Traversing
+	while(dll_empty(queue) != 1) {
+		// Take first element in the queue
+		Dllist node = dll_first(queue);
+		int key = jval_i(node->val);
+		// Dequeue this element
+		dll_delete_node(node);
+		
+		JRB tmp = jrb_find_int(visited, key);
+		if(jval_i(tmp->val) == 0) {
+			// Pass the vertex to external function
+		
+			// Mark this element as 'visited'
+			jrb_delete_node(tmp);
+			jrb_insert_int(visited, key, new_jval_i(1));		
+		}
+
+		// If this is the required vertex, return
+		if (key == stop) {
+			free_dllist(queue);
+			jrb_free_tree(visited);
+			return ;
+		}
+		
+		int count = outDegree(graph, key, adjacents);
+		for (int i = 0; i < count; i++)
+		{
+			JRB ptr = jrb_find_int(visited, adjacents[i]);
+			if(jval_i(ptr->val) == 0)
+				dll_append(queue,new_jval_i(adjacents[i])); 
+		}
+
+	}
+	free_dllist(queue);
+	jrb_free_tree(visited);
+}
+
+
+
+int outDegree(Graph_W graph, int v, int *output)
 {
 	if (graph.edges == NULL) return 0;
 
 	int count = 0;
 	JRB tmp = jrb_find_int(graph.edges, v);
-	
 	if (tmp != NULL) {
 		JRB ptr;
 		JRB tree = (JRB)jval_v(tmp->val);
@@ -88,7 +196,7 @@ int outDegree(Graph_D graph, int v, int *output)
 
 // outDegree
 // inDegree
-int inDegree(Graph_D graph, int v, int* output)
+int inDegree(Graph_W graph, int v, int* output)
 { 	// return the size of adjec, and adjacent into output
 	if (graph.vertices == NULL) return 0;
 
@@ -104,8 +212,8 @@ int inDegree(Graph_D graph, int v, int* output)
 	return count;
 }
 
-
-void BFS(Graph_D graph,int start,int stop,void(*func)(int))
+//chua test 
+void BFS(Graph_W graph,int start,int stop,void(*func)(int))
 {
 	JRB check1 = jrb_find_int(graph.vertices,start);
 	JRB check2 = jrb_find_int(graph.vertices,stop);
@@ -171,21 +279,21 @@ void BFS(Graph_D graph,int start,int stop,void(*func)(int))
 
 // DFS ..........................................................
 
-void DFS(Graph_D graph, int start, int stop, void (*func)(int))
+void DFS(Graph_W graph, int start, int stop, void (*func)(int))
 {
 
 	JRB check1 = jrb_find_int(graph.vertices,start);
 	JRB check2 = jrb_find_int(graph.vertices,stop);
 	if(check1 == NULL ) {
-		printf("Graph_D does not have vertex %d\n", start);
+		printf("Graph_W does not have vertex %d\n", start);
 		return;
 	}
 	if(stop != -1 && check2 == NULL) {
-		printf("Graph_D does not have vertex %d\n", stop);
+		printf("Graph_W does not have vertex %d\n", stop);
 		return;
 	}
 	
-	// Create a Graph_D name 'visited' in which each node's key is
+	// Create a Graph_W name 'visited' in which each node's key is
     // a vertex, and it's key indicate whether the vertex has been
     // visited (1) or not (0)
 	JRB visited = make_jrb();
@@ -242,7 +350,7 @@ void DFS(Graph_D graph, int start, int stop, void (*func)(int))
 }
 
 
-int isCycleVertex(Graph_D graph, int start)
+int isCycleVertex(Graph_W graph, int start)
 {
 	JRB visited = make_jrb();
 	JRB ptr;
@@ -296,7 +404,7 @@ int isCycleVertex(Graph_D graph, int start)
 	return 0;
 }
 
-int isCycle(Graph_D graph)
+int isCycle(Graph_W graph)
 {	
 	JRB ptr;
 	jrb_traverse(ptr,graph.edges) {
@@ -306,7 +414,7 @@ int isCycle(Graph_D graph)
 	return 0;
 }
 
-void showVertices(Graph_D graph)
+void showVertices(Graph_W graph)
 {
 	JRB ptr;
 	jrb_traverse(ptr, graph.vertices) {
@@ -314,7 +422,7 @@ void showVertices(Graph_D graph)
 	}
 }
 
-void printGraph(Graph_D graph)
+void printGraph(Graph_W graph)
 {
 	JRB ptr;	
 	jrb_traverse(ptr, graph.edges) {
@@ -328,7 +436,7 @@ void printGraph(Graph_D graph)
 	}
 }
 
-void topologicalSort(Graph_D graph, void (*visit)(int))
+void topologicalSort(Graph_W graph, void (*visit)(int))
 {
  	JRB ptr;
  	int V = 0;
@@ -368,7 +476,7 @@ void topologicalSort(Graph_D graph, void (*visit)(int))
  	free_dllist(queue);
 }
 
- void topologicalSort_T(Graph_D g, int * output, int * n) {
+ void topologicalSort_T(Graph_W g, int * output, int * n) {
     JRB node;
     int indegreeList[100];
     int adjacents[100];

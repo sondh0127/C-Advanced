@@ -14,20 +14,27 @@ int main(int argc, char const *argv[])
 {
 
 	Graph_D G = createGraph();
-
-	addVertex(G, 0, "V0");
-	addVertex(G, 1, "V1");
-	addVertex(G, 2, "V2");
-	addVertex(G, 3, "V3");
-	addVertex(G, 4, "V4");
+	addVertex(G, 0, "CS102");
+	addVertex(G, 1, "CS140");
+	addVertex(G, 2, "CS160");
+	addVertex(G, 3, "CS302");
+	addVertex(G, 4, "CS311");
+	addVertex(G, 5, "MATH300");
 
 	addEdge(G, 0, 1);
-	addEdge(G, 1, 2);
-	addEdge(G, 2, 3);
+	addEdge(G, 0, 2);
 	addEdge(G, 1, 3);
+	addEdge(G, 5, 4);
 	addEdge(G, 3, 4);
 	printf("================\n");
 	printGraph(G);
+	if (isCycle(G) == 1) {
+		printf("Can not make topological sort\n");
+		return 1;
+	}
+	printf("The topological order:\n");
+	topologicalSort(G, show_int);
+
 	// int count = inDegree(G, 1, output);
 	// printf("\nInDegree\n");
 	// for (int i = 0; i < count; ++i)	{
@@ -40,18 +47,15 @@ int main(int argc, char const *argv[])
 	// 	printf("%d ",output2[i]);
 	// }
 	
-	// printf("\n");
-	
+	printf("\n");
 
-	if(isCycle(G) == 1) 
-	printf("\nHave a cycles in the graph\n");
-	else {
-		printf("\nGraph is DAG graph!\n");
-		topologicalSort(G, show_int);
-		printf("\n");
-	}
-	
-
+	// if(isCycle(G) == 1) 
+	// printf("\nHave a cycles in the graph\n");
+	// else {
+	// 	printf("\nGraph is DAG graph!\n");
+	// 	topologicalSort(G, show_int);
+	// 	printf("\n");
+	// }
 
 	return 0;
 }
