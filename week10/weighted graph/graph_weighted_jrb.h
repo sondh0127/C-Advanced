@@ -1,4 +1,4 @@
-	#ifndef GRAPH_JRB_H
+#ifndef GRAPH_JRB_H
 #define GRAPH_JRB_H
 #include "../../lib/include/jrb.h"
 typedef struct {
@@ -18,7 +18,7 @@ void addEdge(Graph_W graph, int v1, int v2, double weight);
 double getEdgeValue(Graph_W graph, int v1, int v2);
 int getHighestID(Graph_W graph);
 double shortestPath(Graph_W graph,int start,int stop, int *output_path, int *length);
-
+// ==============Add modifier============
 int outDegree(Graph_W graph, int v, int *output);
 int inDegree(Graph_W graph, int v, int* output);
 
