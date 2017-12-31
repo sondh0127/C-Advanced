@@ -14,26 +14,36 @@ int main(int argc, char const *argv[])
 {
 
 	Graph_D G = createGraph();
-	addVertex(G, 0, "CS102");
-	addVertex(G, 1, "CS140");
-	addVertex(G, 2, "CS160");
-	addVertex(G, 3, "CS302");
-	addVertex(G, 4, "CS311");
-	addVertex(G, 5, "MATH300");
+	addVertex(G, 1, "A1");
+	addVertex(G, 2, "A2");
+	addVertex(G, 3, "A3");
+	addVertex(G, 4, "A4");
+	addVertex(G, 5, "A5");
+	addVertex(G, 6, "A6");
+	addVertex(G, 7, "A7");
 
-	addEdge(G, 0, 1);
-	addEdge(G, 0, 2);
+	addEdge(G, 1, 2);
 	addEdge(G, 1, 3);
-	addEdge(G, 5, 4);
+	addEdge(G, 2, 5);
 	addEdge(G, 3, 4);
+	addEdge(G, 4, 5);
+	addEdge(G, 4, 6);
+	addEdge(G, 5, 6);
+	addEdge(G, 6, 7);
 	printf("================\n");
 	printGraph(G);
 	if (isCycle(G) == 1) {
 		printf("Can not make topological sort\n");
 		return 1;
 	}
+	int n;
+	int output2[10];
 	printf("The topological order:\n");
-	topologicalSort(G, show_int);
+	topologicalSort_T(G, output2, &n);
+	for (int i = 0; i < n; ++i)
+	{
+		show_int(output2[i]);
+	}
 
 	// int count = inDegree(G, 1, output);
 	// printf("\nInDegree\n");

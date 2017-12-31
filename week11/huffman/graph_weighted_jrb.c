@@ -1,18 +1,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "graph_direct_jrb.h"
+#include "graph_weighted_jrb.h"
 #include "../../lib/include/dllist.h"
 
-Graph_D createGraph()
+Graph_W createGraph()
 {
-	Graph_D newGraph;
+	Graph_W newGraph;
 	newGraph.edges = make_jrb();
 	newGraph.vertices = make_jrb();
 	return newGraph;
 }
 
-void dropGraph(Graph_D graph)
+void dropGraph(Graph_W graph)
 {
 	JRB ptr;
 	jrb_traverse(ptr, graph.edges) {
@@ -22,7 +22,7 @@ void dropGraph(Graph_D graph)
 	jrb_free_tree(graph.edges);
 }
 
-void addVertex(Graph_D graph, int id, char *name)
+void addVertex(Graph_W graph, int id, char *name)
 {
 	JRB tmp = jrb_find_int(graph.vertices, id);
 	if (tmp == NULL) {
@@ -32,7 +32,7 @@ void addVertex(Graph_D graph, int id, char *name)
 	}
 }
 
-char *getVertex(Graph_D graph, int id)
+char *getVertex(Graph_W graph, int id)
 {
 	JRB tmp = jrb_find_int(graph.vertices, id);
 	if(tmp != NULL)
@@ -40,7 +40,7 @@ char *getVertex(Graph_D graph, int id)
 	return NULL;
 }
 
-int isAdjacent(Graph_D graph, int v1, int v2)
+int isAdjacent(Graph_W graph, int v1, int v2)
 {
 	if (graph.edges == NULL) return 0;
 
@@ -53,8 +53,8 @@ int isAdjacent(Graph_D graph, int v1, int v2)
 	}
 	return 0;
 }
-
-void addEdge(Graph_D graph, int v1, int v2)
+// ==============Add modifier============
+void addEdge(Graph_W graph, int v1, int v2, double weight)
 {
 	if (isAdjacent(graph, v1, v2)) return;
 	JRB tmp = jrb_find_int(graph.edges, v1);
@@ -62,20 +62,165 @@ void addEdge(Graph_D graph, int v1, int v2)
 	if (tmp == NULL) {
 		tree = make_jrb();
 		jrb_insert_int(graph.edges, v1, new_jval_v(tree));
-		jrb_insert_int(tree, v2, new_jval_i(1));
+		jrb_insert_int(tree, v2, new_jval_d(weight));
 	} else {
 		tree = (JRB)jval_v(tmp->val);
-		jrb_insert_int(tree, v2, new_jval_i(1));
+		jrb_insert_int(tree, v2, new_jval_d(weight));
 	}
 }
+// == Valid check for test
+	// JRB tmp = jrb_find_int(graph.vertices, v1);
+	// if (tmp == NULL) return  INFINITIVE_VALUE;
+	// JRB tmp = jrb_find_int(graph.vertices, v2);
+	// if (tmp == NULL) return  INFINITIVE_VALUE;
+	// if (isAdjacent(graph, v1, v2) == 0) return INFINITIVE_VALUE;
+double getEdgeValue(Graph_W graph, int v1, int v2)
+{
+	JRB tmp = jrb_find_int(graph.edges, v1);
+	if (tmp != NULL) {
+		JRB tree = (JRB) jval_v(tmp->val);
+		JRB ptr = jrb_find_int(tree, v2);
+		if(ptr != NULL) {
+			return jval_d(ptr->val);
+		}
+	}
 
-int outDegree(Graph_D graph, int v, int *output)
+	return INFINITIVE_VALUE;
+}
+
+int getHighestID(Graph_W graph)
+{	
+	int max = -1000;
+	JRB ptr;
+	jrb_traverse(ptr, graph.vertices) {
+		int key = jval_i(ptr->key);
+		if(key >= max)
+			max = key;
+	}
+	return max;
+}
+
+
+double shortestPath (Graph_W graph,	int start,	int stop, int *output_path,	int *length)
+{
+	JRB check1 = jrb_find_int(graph.vertices,start);
+	JRB check2 = jrb_find_int(graph.vertices,stop);
+	if (check1 == NULL ) {
+		printf("Graph does not have vertex %d\n", start);
+		return INFINITIVE_VALUE;
+	}
+	if (check2 == NULL) {
+		printf("Graph does not have vertex %d\n", stop);
+		return INFINITIVE_VALUE;
+	}
+
+
+	JRB parent = make_jrb();
+	JRB distance = make_jrb();
+
+	JRB ptr;
+	int V = 0;
+	jrb_traverse(ptr,graph.vertices) {
+		int key = jval_i(ptr->key);
+		double dist = INFINITIVE_VALUE;
+		if(key == start)
+			dist = 0;
+		jrb_insert_int(distance, key, new_jval_d(dist));
+		jrb_insert_int(parent, key, new_jval_i(-1));
+		V++;
+	}
+	
+	// Create a queue and enqueue the first element
+	Dllist queue = new_dllist();
+	jrb_traverse(ptr, graph.vertices) {
+		int key = jval_i(ptr->key);
+		if (key == start) {
+			dll_prepend(queue, new_jval_i(start));
+		} else {
+			dll_append(queue, new_jval_i(key));
+		}
+	}
+	int adjacents[V];
+	// Traversing
+	while(dll_empty(queue) != 1) {
+		// Take first element in the queue
+		Dllist node = dll_first(queue);
+		int key = jval_i(node->val);
+		
+		// If this is the required vertex, return
+		int total;
+		if (key == stop) {
+			total = 0;
+			while(key != -1) {
+				adjacents[total++] = key;
+				key = jval_i(jrb_find_int(parent, key)->val);
+			}
+			for (int i = 0; i < total; i++) {
+                output_path[i] = adjacents[total - 1 - i];
+            }
+            // Return the total number of node in the route
+            *length = total;
+            // Return the total weight;  
+            return jval_d(jrb_find_int(distance, stop)->val);
+        }
+		// Dequeue this element
+		dll_delete_node(node);
+		
+		// The distance to it (key) from the start node
+		double toKeyDistance = jval_d(jrb_find_int(distance, key)->val);
+		int count = outDegree(graph, key, adjacents);
+		for (int i = 0; i < count; i++) {
+			// ==== set name for current adj =======
+			double toAdjDistance = jval_d(jrb_find_int(distance, stop)->val);
+			int adjKey = adjacents[i];
+			double weight = getEdgeValue(graph, key, adjKey);
+			// ==============
+			// If the path to the adjacent node can be shorten
+            // by going through the current node,
+			// we set its parent to the current node
+			if (toKeyDistance + weight < toAdjDistance) {
+				toAdjDistance = toKeyDistance + weight;
+				// Set new distance
+				JRB tmp = jrb_find_int(distance, adjKey);
+				jrb_delete_node(tmp);
+				jrb_insert_int(distance, adjKey, new_jval_d(toAdjDistance));
+
+				// Set new parent
+				tmp = jrb_find_int(parent, adjKey);
+				jrb_delete_node(tmp);
+				jrb_insert_int(parent, adjKey, new_jval_i(key));
+			}
+			// Dequeue the adjacent node and re-add it to the queue to maintain the priority
+			Dllist temp;
+			dll_traverse(temp, queue) {
+				if (jval_i(temp->val) == adjKey) {
+					dll_delete_node(temp);
+					break;
+				}
+			}
+			dll_traverse(temp, queue) {
+				int qKey = jval_i(temp->val);
+				double dist = jval_d(jrb_find_int(distance, qKey)->val);
+				if (dist > toAdjDistance) {
+					dll_insert_b(temp, new_jval_i(adjKey));
+					break;
+				}
+			}
+		}		
+	}
+	free_dllist(queue);
+	jrb_free_tree(parent);
+	jrb_free_tree(distance);
+	return jval_d(jrb_find_int(distance, stop)->val);
+}
+
+
+int outDegree(Graph_W graph, int v, int *output)
 {
 	if (graph.edges == NULL) return 0;
 
 	int count = 0;
 	JRB tmp = jrb_find_int(graph.edges, v);
-	
 	if (tmp != NULL) {
 		JRB ptr;
 		JRB tree = (JRB)jval_v(tmp->val);
@@ -88,7 +233,7 @@ int outDegree(Graph_D graph, int v, int *output)
 
 // outDegree
 // inDegree
-int inDegree(Graph_D graph, int v, int* output)
+int inDegree(Graph_W graph, int v, int* output)
 { 	// return the size of adjec, and adjacent into output
 	if (graph.vertices == NULL) return 0;
 
@@ -104,8 +249,8 @@ int inDegree(Graph_D graph, int v, int* output)
 	return count;
 }
 
-
-void BFS(Graph_D graph,int start,int stop,void(*func)(int))
+//chua test 
+void BFS(Graph_W graph,int start,int stop,void(*func)(int))
 {
 	JRB check1 = jrb_find_int(graph.vertices,start);
 	JRB check2 = jrb_find_int(graph.vertices,stop);
@@ -117,15 +262,15 @@ void BFS(Graph_D graph,int start,int stop,void(*func)(int))
 		printf("Graph does not have vertex %d\n", stop);
 		return;
 	}
-	// Create a Graph name 'visited' in which each node's key is
+	// Create a Graph name 'parent' in which each node's key is
     // a vertex, and it's key indicate whether the vertex has been
-    // visited (1) or not (0)
-	JRB visited = make_jrb();
+    // parent (1) or not (0)
+	JRB parent = make_jrb();
 	JRB ptr;
 	int V = 0;
 	jrb_traverse(ptr,graph.vertices) {
 		V++;
-		jrb_insert_int(visited, jval_i(ptr->key), new_jval_i(0));
+		jrb_insert_int(parent, jval_i(ptr->key), new_jval_i(0));
 	}
 	int output[V];
 	
@@ -140,60 +285,60 @@ void BFS(Graph_D graph,int start,int stop,void(*func)(int))
 		// Dequeue this element
 		dll_delete_node(node);
 		
-		JRB tmp = jrb_find_int(visited, key);
+		JRB tmp = jrb_find_int(parent, key);
 		if(jval_i(tmp->val) == 0) {
 			// Pass the vertex to external function
 			func(key);
-			// Mark this element as 'visited'
+			// Mark this element as 'parent'
 			jrb_delete_node(tmp);
-			jrb_insert_int(visited, key, new_jval_i(1));		
+			jrb_insert_int(parent, key, new_jval_i(1));		
 		}
 
 		// If this is the required vertex, return
 		if (key == stop) {
 			free_dllist(queue);
-			jrb_free_tree(visited);
+			jrb_free_tree(parent);
 			return;
 		}
 		
 		int count = outDegree(graph, key, output);
 		for (int i = 0; i < count; i++)
 		{
-			JRB ptr = jrb_find_int(visited, output[i]);
+			JRB ptr = jrb_find_int(parent, output[i]);
 			if(jval_i(ptr->val) == 0)
 				dll_append(queue,new_jval_i(output[i])); 
 		}
 
 	}
 	free_dllist(queue);
-	jrb_free_tree(visited);
+	jrb_free_tree(parent);
 }
 
 // DFS ..........................................................
 
-void DFS(Graph_D graph, int start, int stop, void (*func)(int))
+void DFS(Graph_W graph, int start, int stop, void (*func)(int))
 {
 
 	JRB check1 = jrb_find_int(graph.vertices,start);
 	JRB check2 = jrb_find_int(graph.vertices,stop);
 	if(check1 == NULL ) {
-		printf("Graph_D does not have vertex %d\n", start);
+		printf("Graph_W does not have vertex %d\n", start);
 		return;
 	}
 	if(stop != -1 && check2 == NULL) {
-		printf("Graph_D does not have vertex %d\n", stop);
+		printf("Graph_W does not have vertex %d\n", stop);
 		return;
 	}
 	
-	// Create a Graph_D name 'visited' in which each node's key is
+	// Create a Graph_W name 'parent' in which each node's key is
     // a vertex, and it's key indicate whether the vertex has been
-    // visited (1) or not (0)
-	JRB visited = make_jrb();
+    // parent (1) or not (0)
+	JRB parent = make_jrb();
 	JRB ptr;
 	int V = 0;
 	jrb_traverse(ptr, graph.vertices) {
 		V++;
-		jrb_insert_int(visited, jval_i(ptr->key), new_jval_i(0));
+		jrb_insert_int(parent, jval_i(ptr->key), new_jval_i(0));
 	}
 	int output[V];
 
@@ -207,13 +352,13 @@ void DFS(Graph_D graph, int start, int stop, void (*func)(int))
 		Dllist dll_tmp = dll_last(stack);
 		int key = jval_i(dll_tmp->val);
 
-		JRB tmp = jrb_find_int(visited, key);
+		JRB tmp = jrb_find_int(parent, key);
 		if(jval_i(tmp->val) == 0) {
         	// Pass the vertex to external function
 			func(key);
-	        // Mark this element as 'visited'
+	        // Mark this element as 'parent'
 			jrb_delete_node(tmp);
-			jrb_insert_int(visited, key, new_jval_i(1));
+			jrb_insert_int(parent, key, new_jval_i(1));
 		} else {
 			// Pop this element
 			dll_delete_node(dll_tmp);
@@ -222,15 +367,15 @@ void DFS(Graph_D graph, int start, int stop, void (*func)(int))
 		// If this is the required vertex, return
 		if (key == stop) {
 			free_dllist(stack);
-			jrb_free_tree(visited);
+			jrb_free_tree(parent);
 			return;
 		}
 
 		int count = outDegree(graph, key, output);
 		for (int i = count -1 ; i >= 0; i--)
 		{
-	            // If the vertice has not been visited, push it
-			tmp = jrb_find_int(visited, output[i]);
+	            // If the vertice has not been parent, push it
+			tmp = jrb_find_int(parent, output[i]);
 			if (jval_i(tmp->val) == 0) {
 				key = jval_i(tmp->key);
 				dll_append(stack, new_jval_i(key));
@@ -238,18 +383,18 @@ void DFS(Graph_D graph, int start, int stop, void (*func)(int))
 		}
 	}
 	free_dllist(stack);
-	jrb_free_tree(visited);
+	jrb_free_tree(parent);
 }
 
 
-int isCycleVertex(Graph_D graph, int start)
+int isCycleVertex(Graph_W graph, int start)
 {
-	JRB visited = make_jrb();
+	JRB parent = make_jrb();
 	JRB ptr;
 	int V = 0;
 	jrb_traverse(ptr, graph.vertices) {
 		V++;
-		jrb_insert_int(visited, jval_i(ptr->key), new_jval_i(0));
+		jrb_insert_int(parent, jval_i(ptr->key), new_jval_i(0));
 	}
 	int output[V];
 
@@ -263,13 +408,13 @@ int isCycleVertex(Graph_D graph, int start)
 		Dllist dll_tmp = dll_last(stack);
 		int key = jval_i(dll_tmp->val);
 
-		JRB tmp = jrb_find_int(visited, key);
+		JRB tmp = jrb_find_int(parent, key);
 		if(jval_i(tmp->val) == 0) {
         	// Pass the vertex to external function
 			//printf("%4d ", key);
-	        // Mark this element as 'visited'
+	        // Mark this element as 'parent'
 			jrb_delete_node(tmp);
-			jrb_insert_int(visited, key, new_jval_i(1));
+			jrb_insert_int(parent, key, new_jval_i(1));
 		} else {
 			// Pop this element
 			dll_delete_node(dll_tmp);
@@ -278,12 +423,12 @@ int isCycleVertex(Graph_D graph, int start)
 		for (int i = count -1 ; i >= 0; i--) {
 			if (start == output[i])
 			{
-				jrb_free_tree(visited);
+				jrb_free_tree(parent);
 				free_dllist(stack);
 				return 1;
 			}
-			// If the vertice has not been visited, push it
-			tmp = jrb_find_int(visited, output[i]);
+			// If the vertice has not been parent, push it
+			tmp = jrb_find_int(parent, output[i]);
 			if (jval_i(tmp->val) == 0) {
 				key = jval_i(tmp->key);
 				dll_append(stack, new_jval_i(key));
@@ -292,11 +437,11 @@ int isCycleVertex(Graph_D graph, int start)
 	}
 	
 	free_dllist(stack);
-	jrb_free_tree(visited);
+	jrb_free_tree(parent);
 	return 0;
 }
 
-int isCycle(Graph_D graph)
+int isCycle(Graph_W graph)
 {	
 	JRB ptr;
 	jrb_traverse(ptr,graph.edges) {
@@ -306,7 +451,7 @@ int isCycle(Graph_D graph)
 	return 0;
 }
 
-void showVertices(Graph_D graph)
+void showVertices(Graph_W graph)
 {
 	JRB ptr;
 	jrb_traverse(ptr, graph.vertices) {
@@ -314,7 +459,7 @@ void showVertices(Graph_D graph)
 	}
 }
 
-void printGraph(Graph_D graph)
+void printGraph(Graph_W graph)
 {
 	JRB ptr;	
 	jrb_traverse(ptr, graph.edges) {
@@ -328,7 +473,7 @@ void printGraph(Graph_D graph)
 	}
 }
 
-void topologicalSort(Graph_D graph, void (*visit)(int))
+void topologicalSort(Graph_W graph, void (*visit)(int))
 {
 	JRB ptr;
 	int V = 0;
@@ -368,9 +513,9 @@ void topologicalSort(Graph_D graph, void (*visit)(int))
 	free_dllist(queue);
 }
 
-void topologicalSort_T(Graph_D g, int * output, int * n) {
+void topologicalSort_T(Graph_W g, int * output, int * n) {
 	JRB node;
-	JRB indegreeList = make_jrb();
+	int indegreeList[100];
 	int adjacents[100];
 	int count = 0;
 	int i, total;
@@ -380,24 +525,18 @@ void topologicalSort_T(Graph_D g, int * output, int * n) {
 	Dllist temp;
 
 	jrb_traverse(node, g.vertices) {
-    	// temp value
-		int node_key = jval_i(node->key);
-		int node_inDegree = inDegree(g, node_key, adjacents);
-        ///
-		jrb_insert_int(indegreeList, node_key, new_jval_i(node_inDegree));
-		if (node_inDegree == 0) {
+		indegreeList[count] = inDegree(g, jval_i(node->key), adjacents);
+		if (indegreeList[count] == 0) {
 			dll_append(queue, node->key);
 		}
 		count++;
 	}
-	jrb_traverse(node, indegreeList) {
-		printf("id: %d val: %d\n", jval_i(node->key), jval_i(node->val));
-	}
+
 	*n = count;
 	count = 0;
     // indegreeList
     // 0, 1, 1, 1, 2, 0
-    // -1, 0, 0, 1, 1, 0/
+    // -1, 0, 0, 1, 1, 0
 
 	while(dll_empty(queue) != 1) {
 		temp = dll_first(queue);
@@ -405,31 +544,17 @@ void topologicalSort_T(Graph_D g, int * output, int * n) {
 		dll_delete_node(temp);
 
 		output[count] = key;
-		node = jrb_find_int(indegreeList, key);
-		if(node != NULL) {
-			jrb_delete_node(node);
-			jrb_insert_int(indegreeList, key, new_jval_i(-1));
-		}
-
+		indegreeList[key] = -1;
 
 		total = outDegree(g, key, adjacents);
 		for (i = 0; i < total; i++) {
 			tail = adjacents[i];
-			node = jrb_find_int(indegreeList, tail);
-			if (node != NULL) {
-				int tail_indegree = jval_i(node->val);
-				jrb_delete_node(node);
-				tail_indegree--;
-				jrb_insert_int(indegreeList, tail, new_jval_i(tail_indegree));
-				if (tail_indegree == 0) {
-					dll_append(queue, new_jval_i(tail));
-				}
+			indegreeList[tail]--;
+			if (indegreeList[tail] == 0) {
+				dll_append(queue, new_jval_i(tail));
 			}
 		}
+
 		count++;
-		printf("=================\n");
-		jrb_traverse(node, indegreeList) {
-			printf("id: %d val: %d\n", jval_i(node->key), jval_i(node->val));
-		}
 	}
 }
