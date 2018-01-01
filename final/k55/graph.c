@@ -315,7 +315,7 @@ double shortest_path(Graph graph, int start, int stop, int *path, int *length)
 					int qKey = jval_i(temp->val);
 					double dist = jval_d(jrb_find_int(distance, qKey)->val);
 					if (dist > toAdj) {
-						dll_insert_b(temp, new_jval_i(adjKey));
+						dll_insert_a(temp, new_jval_i(adjKey));
 						break;
 					}
 				}

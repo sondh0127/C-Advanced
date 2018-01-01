@@ -1,0 +1,14 @@
+ThuyLinh -> An
+An -> BinhMom
+BinhMom -> DatDu
+BinhMom -> ThanhLT
+DatDu -> ThanhLT
+DatDu -> ThanhDS
+ThanhLT -> ThanhDS
+ThanhLT -> Hai
+ThanhLT -> HoatND
+Hai -> HoatND
+BacHa -> Hoang
+BacHa -> Minh
+Hoang -> Minh
+VTLong

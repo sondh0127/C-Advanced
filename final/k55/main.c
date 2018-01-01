@@ -43,6 +43,8 @@ int main(int argc, char *argv[])
 			printf("	- Number of \"so quan he\": %d\n", count_edges(G, DIRECTED));
 			// endinput:
 			// jettison_inputstruct(is);
+			print_by_level(G, 1, -1, print_vertex);
+
 			break;
 			// 
 			case 2:

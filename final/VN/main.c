@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
 	int total, *output;
 	// Array1 *a;
 	double weight;
-	int flag;
+	int flag, length;
 	// double time;
     // --------------------------------
 	int choose = 0;
@@ -91,12 +91,22 @@ int main(int argc, char *argv[])
 			log(" Enter second product: ");
 			readLn(stdin, name2, 10);
 			v2 = atoi(name2);
-			flag  = is_adjacent(G, v, v2);
-			if (flag) {
-				printf("	Related Products: ");
-				dfs(G, v, v2, print_vertices_name);
-			} else {
-				printf("	- The two products are not related to each other\n");
+			// flag  = is_adjacent(G, v, v2);
+			// if (flag) {
+			// 	printf("	Related Products: ");
+			// 	dfs(G, v, v2, print_vertices_name);
+			// } else {
+			// 	printf("	- The two products are not related to each other\n");
+			// }
+			output = (int*) malloc(sizeof(int) * count_vertices(G));
+			shortest_path(G, v, v2, output, &length);
+			if (length < 2) printf("There is no path between these 2 products.\n");
+			else {
+				for (int i = 0; i < length; i++) {
+					printf("%s", get_vertex_name(G, output[i]));
+					if (i == length - 1) printf("\n");
+					else printf(" - ");
+				}
 			}
 			
 			break;
